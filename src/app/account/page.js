@@ -1,5 +1,8 @@
 'use client';
 
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+
 const MENU_SECTIONS = [
   {
     title: 'My Account',
@@ -26,32 +29,80 @@ const MENU_SECTIONS = [
   },
 ];
 
+function getInitials(name, lastName) {
+  return `${name?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || '?';
+}
+
 export default function AccountPage() {
+  const { user, loading, logout } = useAuth();
+  const router = useRouter();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-2 border-nermee-green border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-nermee-surface">
       {/* Profile header */}
       <header className="bg-white px-4 pt-12 pb-5 border-b border-nermee-border">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-nermee-green flex items-center justify-center shrink-0">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-            </svg>
+        {user ? (
+          /* Logged in state */
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-nermee-green flex items-center justify-center shrink-0">
+              <span className="text-xl font-bold text-white">
+                {getInitials(user.name, user.lastName)}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-nermee-text">
+                {user.name} {user.lastName}
+              </p>
+              <p className="text-sm text-nermee-text-sec mt-0.5">
+                {user.phone ? `+63 ${user.phone.slice(1)}` : ''}
+              </p>
+              {user.email ? (
+                <p className="text-xs text-nermee-text-sec truncate">{user.email}</p>
+              ) : null}
+            </div>
+            <button
+              onClick={() => router.push('/auth/setup')}
+              className="px-3 py-1.5 border border-nermee-border rounded-lg text-xs font-semibold text-nermee-text-sec active:bg-nermee-surface"
+            >
+              Edit
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-base font-bold text-nermee-text">Guest User</p>
-            <p className="text-sm text-nermee-text-sec mt-0.5">Not logged in</p>
+        ) : (
+          /* Logged out state */
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-nermee-surface border border-nermee-border flex items-center justify-center shrink-0">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-nermee-text">Guest</p>
+              <p className="text-sm text-nermee-text-sec mt-0.5">Sign in to book services</p>
+            </div>
+            <button
+              onClick={() => router.push('/auth/login')}
+              className="px-4 py-2 bg-nermee-green text-white text-sm font-semibold rounded-lg active:opacity-90"
+            >
+              Log In
+            </button>
           </div>
-          <button className="px-4 py-2 bg-nermee-green text-white text-sm font-semibold rounded-lg active:opacity-90">
-            Log In
-          </button>
-        </div>
+        )}
 
-        {/* Stats row */}
+        {/* Stats */}
         <div className="flex mt-5 border border-nermee-border rounded-xl overflow-hidden">
           {[
             { label: 'Bookings', value: '0' },
             { label: 'Reviews', value: '0' },
-            { label: 'Saved', value: '0' },
+            { label: 'Saved',   value: '0' },
           ].map(({ label, value }, i, arr) => (
             <div
               key={label}
@@ -62,9 +113,17 @@ export default function AccountPage() {
             </div>
           ))}
         </div>
+
+        {/* Location badge */}
+        {user?.cityLabel && (
+          <div className="flex items-center gap-1.5 mt-3 px-1">
+            <span className="text-sm">📍</span>
+            <span className="text-xs text-nermee-text-sec">{user.cityLabel}</span>
+          </div>
+        )}
       </header>
 
-      {/* Menu sections */}
+      {/* Menu */}
       <main className="flex-1 px-4 py-4 pb-28 space-y-4">
         {MENU_SECTIONS.map((section) => (
           <div key={section.title}>
@@ -91,10 +150,14 @@ export default function AccountPage() {
           </div>
         ))}
 
-        {/* Log out */}
-        <button className="w-full py-3.5 rounded-xl border border-red-200 text-red-500 text-sm font-semibold active:bg-red-50 transition-colors">
-          Log Out
-        </button>
+        {user && (
+          <button
+            onClick={() => { logout(); router.push('/'); }}
+            className="w-full py-3.5 rounded-xl border border-red-200 text-red-500 text-sm font-semibold active:bg-red-50 transition-colors"
+          >
+            Log Out
+          </button>
+        )}
 
         <p className="text-center text-[11px] text-nermee-text-sec pb-2">
           Nermee v0.1.0 · Made with ♥ in Bayawan City

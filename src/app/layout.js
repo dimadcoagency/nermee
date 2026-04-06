@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import BottomNav from '@/components/layout/BottomNav';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata = {
   title: 'Nermee — Services at your doorstep',
@@ -39,10 +40,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-nermee-surface min-h-screen font-sans antialiased">
-        <div className="mx-auto max-w-app min-h-screen bg-white relative">
-          {children}
-          <BottomNav />
-        </div>
+        <AuthProvider>
+          <div className="mx-auto max-w-app min-h-screen bg-white relative">
+            {children}
+            <BottomNav />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
