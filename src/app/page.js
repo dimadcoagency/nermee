@@ -55,7 +55,7 @@ export default function HomePage() {
             <img
               src="/images/logo.png"
               alt="NerMee"
-              className="h-9 w-auto object-contain"
+              style={{ height: '48px', width: 'auto', objectFit: 'contain', display: 'block' }}
             />
             <div className="flex items-center gap-1 text-xs text-nermee-text-sec font-medium mt-0.5">
               <span>📍</span>
