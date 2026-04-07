@@ -51,22 +51,12 @@ export default function HomePage() {
         <div className="flex items-start justify-between mb-3">
           {/* Logo + location */}
           <div>
-            {/* Logo — cropped via container to remove whitespace from 2000x2000 PNG */}
-            <div style={{ width: '130px', height: '44px', overflow: 'hidden', position: 'relative' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/logo.png"
-                alt="NerMee"
-                style={{
-                  position: 'absolute',
-                  width: '200%',
-                  height: '200%',
-                  top: '-22%',
-                  left: '-35%',
-                  objectFit: 'cover',
-                }}
-              />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/logo.png"
+              alt="NerMee"
+              style={{ height: '36px', width: 'auto', display: 'block' }}
+            />
             <div className="flex items-center gap-1 text-xs text-nermee-text-sec font-medium mt-0.5">
               <span>📍</span>
               <span>{cityLabel}</span>

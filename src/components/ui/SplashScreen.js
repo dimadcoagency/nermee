@@ -26,22 +26,17 @@ export default function SplashScreen() {
       className="fixed inset-0 z-[999] bg-white flex items-center justify-center"
       style={{ animation: exiting ? 'splash-fadeout 0.4s ease-in forwards' : 'none' }}
     >
-      {/* Crop whitespace from 2000x2000 PNG */}
-      <div style={{ width: '260px', height: '88px', overflow: 'hidden', position: 'relative', animation: 'splash-bounce 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/logo.png"
-          alt="NerMee"
-          style={{
-            position: 'absolute',
-            width: '200%',
-            height: '200%',
-            top: '-22%',
-            left: '-35%',
-            objectFit: 'cover',
-          }}
-        />
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/logo.png"
+        alt="NerMee"
+        style={{
+          width: '240px',
+          height: 'auto',
+          display: 'block',
+          animation: 'splash-bounce 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        }}
+      />
     </div>
   );
 }
