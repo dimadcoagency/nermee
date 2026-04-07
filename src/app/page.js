@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import CategoryPills from '@/components/services/CategoryPills';
 import ServiceCard from '@/components/services/ServiceCard';
 import FeaturedServiceCard from '@/components/services/FeaturedServiceCard';
@@ -49,13 +50,20 @@ export default function HomePage() {
       {/* ── Header ─────────────────────────────────── */}
       <header className="bg-white border-b border-nermee-border px-4 pt-10 pb-3 sticky top-0 z-10">
         <div className="flex items-start justify-between mb-3">
-          {/* Location + title */}
+          {/* Logo + location */}
           <div>
-            <div className="flex items-center gap-1 text-xs text-nermee-text-sec font-medium mb-0.5">
+            <Image
+              src="/images/logo.png"
+              alt="NerMee"
+              width={110}
+              height={38}
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+            <div className="flex items-center gap-1 text-xs text-nermee-text-sec font-medium mt-0.5">
               <span>📍</span>
               <span>{cityLabel}</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-nermee-text tracking-tight">Nermee</h1>
           </div>
 
           {/* Profile avatar */}
