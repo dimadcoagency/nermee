@@ -95,7 +95,7 @@ export default function HomePage() {
                 <SwipeCarousel
                   items={promotedServices}
                   renderItem={(service) => (
-                    <FeaturedServiceCard service={service} showAd onClick={() => {}} />
+                    <FeaturedServiceCard service={service} showAd />
                   )}
                 />
               </section>
@@ -111,7 +111,7 @@ export default function HomePage() {
                 <SwipeCarousel
                   items={topRatedServices}
                   renderItem={(service) => (
-                    <FeaturedServiceCard service={service} showAd={false} onClick={() => {}} />
+                    <FeaturedServiceCard service={service} showAd={false} />
                   )}
                 />
               </section>
@@ -146,11 +146,7 @@ export default function HomePage() {
           ) : (
             <div className="flex flex-col gap-3">
               {allServices.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  onClick={() => {}}
-                />
+                <ServiceCard key={service.id} service={service} />
               ))}
             </div>
           )}

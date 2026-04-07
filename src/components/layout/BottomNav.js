@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+const HIDDEN_ON = ['/auth/login', '/auth/verify', '/auth/setup'];
+
 const NAV_ITEMS = [
   {
     href: '/',
@@ -59,6 +61,8 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+
+  if (HIDDEN_ON.includes(pathname)) return null;
 
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nermee-border safe-bottom z-20">

@@ -44,16 +44,21 @@ export const BOOKING_STATUSES = {
   no_show:     { label: 'No Show',     color: 'text-red-400',   bg: 'bg-red-50' },
 };
 
-// ─── Mock data for Sprint 1 (replaced by Supabase in Sprint 3) ──────────────
+// ─── Mock data (replaced by Supabase in production) ──────────────────────────
+// availability: array of time slot strings shown on the booking page
 export const MOCK_SERVICES = [
   {
     id: '1',
     title: 'Tricycle Ride – Bayawan Poblacion',
+    description: 'Fast and affordable tricycle rides around Bayawan City Poblacion. Available for short trips, airport runs, and school pick-ups. Helmet provided. Can accommodate up to 2 passengers.',
     category: 'ride',
     price: 50,
     price_unit: 'per km',
     city: 'Bayawan City',
     is_boosted: true,
+    lat: 9.3664,
+    lng: 122.8134,
+    availability: ['7:00 AM','8:00 AM','9:00 AM','10:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'],
     merchant: {
       business_name: "JM's Ride Service",
       owner_name: 'Juan Miguel',
@@ -67,11 +72,15 @@ export const MOCK_SERVICES = [
   {
     id: '2',
     title: 'Laundry Pick-up & Delivery',
+    description: 'We pick up your dirty laundry, wash, dry, and fold it, then deliver back to your door. Uses quality detergent. Minimum 3 kilos per pick-up. Same-day available for morning drop-offs.',
     category: 'laundry',
     price: 45,
     price_unit: 'per kilo',
     city: 'Bayawan City',
     is_boosted: true,
+    lat: 9.3692,
+    lng: 122.8109,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','2:00 PM','3:00 PM'],
     merchant: {
       business_name: 'Fresh Fold Laundry',
       owner_name: 'Ana Garcia',
@@ -85,11 +94,15 @@ export const MOCK_SERVICES = [
   {
     id: '3',
     title: 'Grocery & Errand Running',
+    description: 'Need groceries, medicines, or items from the market? We run the errand so you don\'t have to. Send us your list and we\'ll take care of the rest. Covers Bayawan public market and nearby stores.',
     category: 'errands',
     price: 80,
     price_unit: 'per task',
     city: 'Bayawan City',
     is_boosted: true,
+    lat: 9.3650,
+    lng: 122.8155,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'],
     merchant: {
       business_name: 'QuickRun Errands',
       owner_name: 'Carlo Reyes',
@@ -103,11 +116,15 @@ export const MOCK_SERVICES = [
   {
     id: '4',
     title: 'Plumbing Repair & Pipe Fixing',
+    description: 'Licensed plumber with 12 years of experience. Specializes in leaking pipes, faucet repairs, toilet installation, and drainage unclogging. Tools and basic materials included in the service fee.',
     category: 'plumbing',
     price: 350,
     price_unit: 'per visit',
     city: 'Bayawan City',
     is_boosted: false,
+    lat: 9.3641,
+    lng: 122.8120,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','1:00 PM','2:00 PM','3:00 PM'],
     merchant: {
       business_name: 'Mang Nestor Plumbing',
       owner_name: 'Nestor Reyes',
@@ -121,11 +138,15 @@ export const MOCK_SERVICES = [
   {
     id: '5',
     title: 'Home-cooked Lunch Box Delivery',
+    description: 'Fresh, home-cooked Filipino meals delivered to your home or office. Menu changes daily — rice, ulam, and soup included. Uses fresh market ingredients. Order by 9 AM for 12 NN delivery.',
     category: 'meals',
     price: 85,
     price_unit: 'per meal',
     city: 'Bayawan City',
     is_boosted: false,
+    lat: 9.3678,
+    lng: 122.8098,
+    availability: ['11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM'],
     merchant: {
       business_name: "Ate Leny's Homemade Meals",
       owner_name: 'Leny Santos',
@@ -139,11 +160,15 @@ export const MOCK_SERVICES = [
   {
     id: '6',
     title: 'Math & Science Tutoring (Grades 7–10)',
+    description: 'Patient and effective tutoring for junior high school students. Covers algebra, geometry, chemistry, and physics. Sessions conducted at your home or via video call. Progress reports provided weekly.',
     category: 'tutoring',
     price: 150,
     price_unit: 'per session',
     city: 'Bayawan City',
     is_boosted: false,
+    lat: 9.3720,
+    lng: 122.8160,
+    availability: ['3:00 PM','4:00 PM','5:00 PM','6:00 PM'],
     merchant: {
       business_name: 'Teacher Marites Online',
       owner_name: 'Marites Delos Reyes',
@@ -157,11 +182,15 @@ export const MOCK_SERVICES = [
   {
     id: '7',
     title: 'House Deep Cleaning (2–3 BR)',
+    description: 'Thorough house cleaning for 2–3 bedroom homes. Includes sweeping, mopping, bathroom scrubbing, kitchen cleaning, and window wiping. Brings own cleaning supplies. Takes 3–4 hours on average.',
     category: 'cleaning',
     price: 500,
     price_unit: 'per session',
     city: 'Bayawan City',
     is_boosted: false,
+    lat: 9.3658,
+    lng: 122.8175,
+    availability: ['8:00 AM','9:00 AM','1:00 PM','2:00 PM'],
     merchant: {
       business_name: 'SparkleClean Services',
       owner_name: 'Maria Cruz',
@@ -175,11 +204,15 @@ export const MOCK_SERVICES = [
   {
     id: '8',
     title: 'Electrical Wiring & Outlet Repair',
+    description: 'Licensed electrician handling outlet installation, circuit breaker issues, appliance wiring, and light fixture setup. Safety-compliant work. Covers all barangays in Bayawan City.',
     category: 'electrical',
     price: 400,
     price_unit: 'per visit',
     city: 'Bayawan City',
     is_boosted: false,
+    lat: 9.3630,
+    lng: 122.8140,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'],
     merchant: {
       business_name: 'Kuya Ben Electrical',
       owner_name: 'Benjamin Tan',
@@ -193,11 +226,15 @@ export const MOCK_SERVICES = [
   {
     id: '9',
     title: 'Tricycle Ride – Dumaguete City',
+    description: 'Reliable tricycle rides around Dumaguete City. Covers Silliman University area, downtown, and nearby barangays. Clean and well-maintained vehicle. Available 7 days a week.',
     category: 'ride',
     price: 40,
     price_unit: 'per km',
     city: 'Dumaguete City',
     is_boosted: true,
+    lat: 9.3068,
+    lng: 123.3078,
+    availability: ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM'],
     merchant: {
       business_name: 'Manong Boy Rides',
       owner_name: 'Roberto Flores',
@@ -211,11 +248,15 @@ export const MOCK_SERVICES = [
   {
     id: '10',
     title: 'Electrician – Wiring & Installation',
+    description: 'Professional electrical services in Dumaguete. Specializes in home rewiring, solar panel connections, generator setup, and emergency electrical repairs. Response within 2 hours.',
     category: 'electrical',
     price: 450,
     price_unit: 'per visit',
     city: 'Dumaguete City',
     is_boosted: true,
+    lat: 9.3102,
+    lng: 123.3055,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','2:00 PM','3:00 PM'],
     merchant: {
       business_name: 'Dodong Electric Services',
       owner_name: 'Rodrigo Villanueva',
@@ -229,11 +270,15 @@ export const MOCK_SERVICES = [
   {
     id: '11',
     title: 'Home-cooked Meals Delivery',
+    description: 'Authentic Filipino home cooking delivered fresh in Dumaguete. Specialties include sinigang, adobo, kare-kare, and fresh lumpia. Family packs available. Free delivery within 2km.',
     category: 'meals',
     price: 90,
     price_unit: 'per meal',
     city: 'Dumaguete City',
     is_boosted: true,
+    lat: 9.3090,
+    lng: 123.3100,
+    availability: ['11:00 AM','12:00 PM','12:30 PM','1:00 PM','6:00 PM','7:00 PM'],
     merchant: {
       business_name: "Nay Linda's Lutong Bahay",
       owner_name: 'Linda Gomez',
@@ -247,11 +292,15 @@ export const MOCK_SERVICES = [
   {
     id: '12',
     title: 'Plumbing & Leak Repair',
+    description: 'Experienced plumber serving Dumaguete and nearby areas. Handles water line leaks, septic tank issues, pipe replacements, and bathroom fixture installation. Same-day emergency service available.',
     category: 'plumbing',
     price: 300,
     price_unit: 'per visit',
     city: 'Dumaguete City',
     is_boosted: false,
+    lat: 9.3045,
+    lng: 123.3060,
+    availability: ['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM'],
     merchant: {
       business_name: 'Kuya Roel Plumbing',
       owner_name: 'Roel Cabañes',
@@ -265,11 +314,15 @@ export const MOCK_SERVICES = [
   {
     id: '13',
     title: 'House Cleaning & Sanitizing',
+    description: 'Complete house cleaning and disinfection service in Dumaguete. Uses hospital-grade sanitizers. Ideal for post-event cleanup, move-in/move-out cleaning, and regular maintenance. Insured team.',
     category: 'cleaning',
     price: 550,
     price_unit: 'per visit',
     city: 'Dumaguete City',
     is_boosted: false,
+    lat: 9.3120,
+    lng: 123.3085,
+    availability: ['8:00 AM','9:00 AM','1:00 PM','2:00 PM'],
     merchant: {
       business_name: 'CleanPro Dumaguete',
       owner_name: 'Grace Abad',

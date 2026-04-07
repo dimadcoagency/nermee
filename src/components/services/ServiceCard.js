@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 import { CATEGORIES } from '@/lib/constants';
 
@@ -11,15 +12,15 @@ const TIER_LABELS = {
   business: { label: 'BIZ', classes: 'bg-nermee-dark text-white' },
 };
 
-export default function ServiceCard({ service, onClick }) {
+export default function ServiceCard({ service }) {
   if (!service) return null;
 
-  const { title, category, price, price_unit, is_boosted, merchant } = service;
+  const { id, title, category, price, price_unit, is_boosted, merchant } = service;
   const tier = TIER_LABELS[merchant?.tier];
 
   return (
-    <button
-      onClick={() => onClick?.(service)}
+    <Link
+      href={`/services/${id}`}
       className="w-full bg-white border border-nermee-border rounded-xl p-3 flex gap-3 items-start text-left active:bg-nermee-surface transition-colors"
     >
       {/* Category icon */}
@@ -74,6 +75,6 @@ export default function ServiceCard({ service, onClick }) {
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   );
 }

@@ -1,0 +1,168 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import DatePicker from '@/components/booking/DatePicker';
+import TimePicker from '@/components/booking/TimePicker';
+import { MOCK_SERVICES, CATEGORIES } from '@/lib/constants';
+import { formatPrice } from '@/lib/utils';
+
+function getCategoryIcon(categoryId) {
+  return CATEGORIES.find((c) => c.id === categoryId)?.icon ?? '🛠️';
+}
+
+export default function BookingPage() {
+  const { serviceId } = useParams();
+  const router = useRouter();
+
+  const service = useMemo(() => MOCK_SERVICES.find((s) => s.id === serviceId), [serviceId]);
+
+  const today = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedTime, setSelectedTime] = useState('');
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!service) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-sm text-nermee-text-sec">Service not found.</p>
+      </div>
+    );
+  }
+
+  const canConfirm = selectedDate && selectedTime;
+
+  async function handleConfirm() {
+    if (!canConfirm) return;
+    setLoading(true);
+
+    // Store booking in localStorage for confirmed page
+    const booking = {
+      id: `BK${Date.now()}`,
+      serviceId: service.id,
+      serviceTitle: service.title,
+      merchantName: service.merchant.business_name,
+      ownerName: service.merchant.owner_name,
+      category: service.category,
+      price: service.price,
+      price_unit: service.price_unit,
+      date: selectedDate,
+      time: selectedTime,
+      notes,
+      status: 'pending',
+      bookedAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem('nermee_last_booking', JSON.stringify(booking));
+    await new Promise((r) => setTimeout(r, 800));
+    setLoading(false);
+    router.push('/booking/confirmed');
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white">
+      {/* ── Header ─────────────────────────────── */}
+      <header className="flex items-center gap-3 px-4 pt-12 pb-3 bg-white border-b border-nermee-border sticky top-0 z-10">
+        <button onClick={() => router.back()} className="p-1 -ml-1 text-nermee-text-sec">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        <h1 className="text-base font-bold text-nermee-text flex-1 truncate">Book Service</h1>
+      </header>
+
+      <main className="flex-1 pb-36">
+        {/* ── Service summary ─────────────────── */}
+        <div className="flex items-center gap-3 px-4 py-3 bg-nermee-surface border-b border-nermee-border">
+          <div className="w-12 h-12 rounded-xl bg-nermee-light flex items-center justify-center text-2xl shrink-0">
+            {getCategoryIcon(service.category)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-nermee-text truncate">{service.title}</p>
+            <p className="text-xs text-nermee-text-sec mt-0.5">{service.merchant.business_name}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-sm font-extrabold text-nermee-green">{formatPrice(service.price)}</p>
+            <p className="text-[11px] text-nermee-text-sec">{service.price_unit}</p>
+          </div>
+        </div>
+
+        {/* ── Select Date ─────────────────────── */}
+        <section className="px-4 py-4 border-b border-nermee-border">
+          <p className="text-xs font-bold text-nermee-text-sec uppercase tracking-widest mb-3">Select Date</p>
+          <DatePicker selected={selectedDate} onSelect={(d) => { setSelectedDate(d); setSelectedTime(''); }} />
+        </section>
+
+        {/* ── Select Time ─────────────────────── */}
+        <section className="px-4 py-4 border-b border-nermee-border">
+          <p className="text-xs font-bold text-nermee-text-sec uppercase tracking-widest mb-3">Select Time</p>
+          <TimePicker
+            slots={service.availability}
+            selected={selectedTime}
+            onSelect={setSelectedTime}
+          />
+        </section>
+
+        {/* ── Notes ───────────────────────────── */}
+        <section className="px-4 py-4 border-b border-nermee-border">
+          <p className="text-xs font-bold text-nermee-text-sec uppercase tracking-widest mb-3">
+            Notes <span className="font-normal normal-case">(optional)</span>
+          </p>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="e.g. Please bring extra tools. Gate code is 1234."
+            rows={3}
+            className="w-full border border-nermee-border rounded-xl px-4 py-3 text-sm text-nermee-text placeholder:text-nermee-border outline-none focus:ring-2 focus:ring-nermee-green resize-none"
+          />
+        </section>
+
+        {/* ── Booking summary ─────────────────── */}
+        <section className="px-4 py-4">
+          <p className="text-xs font-bold text-nermee-text-sec uppercase tracking-widest mb-3">Booking Summary</p>
+          <div className="bg-nermee-surface rounded-xl p-4 space-y-2.5">
+            {[
+              { label: 'Service', value: service.title },
+              { label: 'Provider', value: service.merchant.business_name },
+              { label: 'Date', value: selectedDate || '—' },
+              { label: 'Time', value: selectedTime || '—' },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-start gap-4">
+                <span className="text-xs text-nermee-text-sec shrink-0">{label}</span>
+                <span className="text-xs font-semibold text-nermee-text text-right">{value}</span>
+              </div>
+            ))}
+            <div className="pt-2 border-t border-nermee-border flex justify-between items-center">
+              <span className="text-sm font-bold text-nermee-text">Total</span>
+              <span className="text-base font-extrabold text-nermee-green">
+                {formatPrice(service.price)} <span className="text-xs font-normal text-nermee-text-sec">{service.price_unit}</span>
+              </span>
+            </div>
+          </div>
+          <p className="text-xs text-nermee-text-sec mt-2 text-center">
+            Payment is made directly to the provider (cash or GCash).
+          </p>
+        </section>
+      </main>
+
+      {/* ── Confirm CTA ─────────────────────────── */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nermee-border px-4 py-3 safe-bottom z-10">
+        {!canConfirm && (
+          <p className="text-xs text-center text-nermee-text-sec mb-2">
+            {!selectedDate ? 'Select a date' : 'Select a time slot'}
+          </p>
+        )}
+        <button
+          onClick={handleConfirm}
+          disabled={!canConfirm || loading}
+          className={`w-full py-4 rounded-xl text-white text-sm font-bold transition-opacity ${
+            !canConfirm || loading ? 'bg-nermee-green opacity-40' : 'bg-nermee-green active:opacity-90'
+          }`}
+        >
+          {loading ? 'Confirming…' : 'Confirm Booking'}
+        </button>
+      </div>
+    </div>
+  );
+}
