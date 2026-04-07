@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Image from 'next/image';
 import CategoryPills from '@/components/services/CategoryPills';
 import ServiceCard from '@/components/services/ServiceCard';
 import FeaturedServiceCard from '@/components/services/FeaturedServiceCard';
@@ -52,13 +51,11 @@ export default function HomePage() {
         <div className="flex items-start justify-between mb-3">
           {/* Logo + location */}
           <div>
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/images/logo.png"
               alt="NerMee"
-              width={110}
-              height={38}
-              priority
-              style={{ objectFit: 'contain' }}
+              className="h-9 w-auto object-contain"
             />
             <div className="flex items-center gap-1 text-xs text-nermee-text-sec font-medium mt-0.5">
               <span>📍</span>

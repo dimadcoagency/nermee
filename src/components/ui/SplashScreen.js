@@ -1,51 +1,40 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 export default function SplashScreen() {
-  // 'visible' → 'exiting' → 'gone'
-  const [phase, setPhase] = useState('visible');
+  const [visible, setVisible] = useState(true);
+  const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    // Only show splash once per session
-    if (sessionStorage.getItem('nermee_splashed')) {
-      setPhase('gone');
-      return;
-    }
-
-    // Hold for 1.5s then start fade-out
-    const exitTimer = setTimeout(() => setPhase('exiting'), 1500);
-    return () => clearTimeout(exitTimer);
+    // Show every time on first mount (PWA launch)
+    // Start exit after 1.6s
+    const exitStart = setTimeout(() => setExiting(true), 1600);
+    // Remove from DOM after exit animation (400ms)
+    const remove = setTimeout(() => setVisible(false), 2000);
+    return () => {
+      clearTimeout(exitStart);
+      clearTimeout(remove);
+    };
   }, []);
 
-  // When fade-out animation ends, remove from DOM and mark session
-  function handleAnimationEnd() {
-    if (phase === 'exiting') {
-      sessionStorage.setItem('nermee_splashed', '1');
-      setPhase('gone');
-    }
-  }
-
-  if (phase === 'gone') return null;
+  if (!visible) return null;
 
   return (
     <div
-      onAnimationEnd={handleAnimationEnd}
-      className={`fixed inset-0 z-50 bg-white flex items-center justify-center ${
-        phase === 'exiting' ? 'splash-exit' : ''
-      }`}
+      className="fixed inset-0 z-[999] bg-white flex items-center justify-center"
+      style={{
+        animation: exiting ? 'splash-fadeout 0.4s ease-in forwards' : 'none',
+      }}
     >
-      <div className="splash-logo flex items-center justify-center px-12">
-        <Image
-          src="/images/logo.png"
-          alt="NerMee"
-          width={220}
-          height={80}
-          priority
-          style={{ objectFit: 'contain' }}
-        />
-      </div>
+      <img
+        src="/images/logo.png"
+        alt="NerMee"
+        className="w-48 h-auto object-contain"
+        style={{
+          animation: 'splash-bounce 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        }}
+      />
     </div>
   );
 }
