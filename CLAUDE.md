@@ -1,13 +1,13 @@
-# CLAUDE.md — Nermee Project Bible
+# CLAUDE.md — Nearmee Project Bible
 
-> **You are the co-pilot engineer for Nermee.** Read this entire file before writing any code.
+> **You are the co-pilot engineer for Nearmee.** Read this entire file before writing any code.
 > Every decision in this file was made deliberately. Do not deviate without discussing with the founder first.
 
 ---
 
 ## 🧭 PROJECT IDENTITY
 
-**App Name:** Nermee
+**App Name:** Nearmee
 **Tagline:** "Services at your doorstep"
 **Bisaya Tagline:** "Serbisyo hapit ra nimo"
 **What it is:** A local services marketplace PWA connecting customers with nearby service providers (plumbers, drivers, cooks, cleaners, tutors, etc.)
@@ -77,7 +77,7 @@ nermee/
 ├── .env.local                   # Supabase keys (never commit this)
 ├── .env.example                 # Template for env vars
 ├── next.config.js               # Next.js configuration + PWA
-├── tailwind.config.js           # Tailwind with Nermee brand tokens
+├── tailwind.config.js           # Tailwind with Nearmee brand tokens
 ├── postcss.config.js            # PostCSS for Tailwind
 ├── package.json
 │
@@ -199,15 +199,17 @@ nermee/
 ### Colors (Tailwind config)
 ```js
 // tailwind.config.js → theme.extend.colors
-nermee: {
-  green: '#00B14F',        // Primary — buttons, logo, active states
-  dark: '#003D1A',         // Dark backgrounds, premium feel
-  light: '#E6F9EE',        // Success states, light accent fills
+nearmee: {
+  coral: '#FF5757',        // Primary — buttons, logo, active states
+  'coral-dark': '#E84E4E', // Hover/pressed state
+  'coral-deep': '#9A2E2E', // Dark accent (rarely used)
+  light: '#FFF0F0',        // Success states, light accent fills
   white: '#FFFFFF',        // Backgrounds, cards
-  surface: '#F5F5F5',      // Input fields, surface fills
-  border: '#E0E0E0',       // Borders, dividers
+  surface: '#F7F7F7',      // Input fields, surface fills
+  border: '#EEEEEE',       // Borders, dividers
   text: '#111111',         // Primary text
   'text-sec': '#888888',   // Secondary text, captions
+  dark: '#2D2D2D',         // Dark backgrounds
 }
 ```
 
@@ -222,9 +224,9 @@ nermee: {
 1. **No gradients.** Flat solid colors only.
 2. **No shadows** except subtle `shadow-sm` on cards if needed.
 3. **No rounded-full** on cards. Use `rounded-xl` (12px) for cards, `rounded-lg` (8px) for buttons/inputs.
-4. **Green is the ONLY accent color.** No blue, red, purple accents.
-5. **White and #F5F5F5 are the only backgrounds.** No colored section backgrounds.
-6. **The only green background element** is the merchant earnings card and primary CTA buttons.
+4. **Coral (#FF5757) is the ONLY accent color.** No blue, green, purple accents.
+5. **White and #F7F7F7 are the only backgrounds.** No colored section backgrounds.
+6. **The only coral background element** is the merchant earnings card and primary CTA buttons.
 7. **Mobile-first always.** Design for 375px width. Max-width 430px for app shell.
 
 ---
@@ -235,7 +237,7 @@ This is the source of truth. Copy this to `supabase/migrations/001_initial_schem
 
 ```sql
 -- ============================================
--- NERMEE DATABASE SCHEMA v1.0
+-- NEARMEE DATABASE SCHEMA v1.0
 -- Supabase (PostgreSQL)
 -- ============================================
 
@@ -631,7 +633,7 @@ export default function ServiceCard({ service, onClick }) {
   return (
     <button
       onClick={handleClick}
-      className="w-full bg-white border border-nermee-border rounded-xl p-3 flex gap-3 items-center text-left"
+      className="w-full bg-white border border-nearmee-border rounded-xl p-3 flex gap-3 items-center text-left"
     >
       {/* ... */}
     </button>
@@ -644,8 +646,8 @@ export default function ServiceCard({ service, onClick }) {
 ## 🚀 BUILD ORDER (follow this sequence exactly)
 
 ### Sprint 1: Foundation (Day 1-2)
-- [ ] `npx create-next-app@latest nermee` with App Router, Tailwind, ESLint
-- [ ] Configure `tailwind.config.js` with Nermee brand tokens
+- [ ] `npx create-next-app@latest nearmee` with App Router, Tailwind, ESLint
+- [ ] Configure `tailwind.config.js` with Nearmee brand tokens
 - [ ] Set up Supabase project + run migration SQL
 - [ ] Create `.env.local` with Supabase URL + anon key
 - [ ] Create `src/lib/supabase/client.js` and `server.js`
@@ -712,13 +714,13 @@ export default function ServiceCard({ service, onClick }) {
 ```json
 // public/manifest.json
 {
-  "name": "Nermee",
-  "short_name": "Nermee",
+  "name": "Nearmee",
+  "short_name": "Nearmee",
   "description": "Services at your doorstep",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#00B14F",
+  "theme_color": "#FF5757",
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
@@ -798,5 +800,5 @@ db: add reports table for ITA compliance
 
 ---
 
-*This file was created on April 6, 2026. Last updated: April 6, 2026.*
-*Nermee is a product of MADINNO. Built by Dimad with Claude as co-pilot.*
+*This file was created on April 6, 2026. Last updated: April 12, 2026.*
+*Nearmee is a product of MADINNO. Built by Dimad with Claude as co-pilot.*
