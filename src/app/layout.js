@@ -1,6 +1,5 @@
 import '../styles/globals.css';
 import BottomNav from '@/components/layout/BottomNav';
-import SplashScreen from '@/components/ui/SplashScreen';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata = {
@@ -43,7 +42,6 @@ export default function RootLayout({ children }) {
       <body className="bg-nearmee-surface min-h-screen font-sans antialiased">
         <AuthProvider>
           <div className="mx-auto max-w-app min-h-screen bg-white relative">
-            <SplashScreen />
             {children}
             <BottomNav />
           </div>
