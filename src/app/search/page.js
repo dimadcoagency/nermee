@@ -26,13 +26,13 @@ export default function SearchPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header + search input */}
-      <header className="bg-white border-b border-nermee-border px-4 pt-12 pb-3 sticky top-0 z-10">
-        <h1 className="text-2xl font-extrabold text-nermee-text mb-3">Search</h1>
+      <header className="bg-white border-b border-nearmee-border px-4 pt-12 pb-3 sticky top-0 z-10">
+        <h1 className="text-2xl font-extrabold text-nearmee-text mb-3">Search</h1>
 
         {/* Search input */}
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-nermee-text-sec"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-nearmee-text-sec"
             width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
           >
@@ -45,12 +45,12 @@ export default function SearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search services, plumbing, rides…"
-            className="w-full bg-nermee-surface rounded-xl pl-9 pr-9 py-3 text-sm text-nermee-text placeholder:text-nermee-text-sec outline-none focus:ring-2 focus:ring-nermee-green"
+            className="w-full bg-nearmee-surface rounded-xl pl-9 pr-9 py-3 text-sm text-nearmee-text placeholder:text-nearmee-text-sec outline-none focus:ring-2 focus:ring-nearmee-coral"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-nermee-text-sec"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-nearmee-text-sec"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -66,8 +66,8 @@ export default function SearchPage() {
             onClick={() => setSelectedCategory('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
               selectedCategory === 'all'
-                ? 'bg-nermee-green text-white'
-                : 'bg-nermee-surface text-nermee-text-sec'
+                ? 'bg-nearmee-coral text-white'
+                : 'bg-nearmee-surface text-nearmee-text-sec'
             }`}
           >
             All
@@ -78,8 +78,8 @@ export default function SearchPage() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-nermee-green text-white'
-                  : 'bg-nermee-surface text-nermee-text-sec'
+                  ? 'bg-nearmee-coral text-white'
+                  : 'bg-nearmee-surface text-nearmee-text-sec'
               }`}
             >
               <span>{cat.icon}</span>
@@ -94,22 +94,22 @@ export default function SearchPage() {
           /* Empty prompt */
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span className="text-5xl mb-4">🔍</span>
-            <p className="text-sm font-semibold text-nermee-text">Find a service near you</p>
-            <p className="text-xs text-nermee-text-sec mt-1">
+            <p className="text-sm font-semibold text-nearmee-text">Find a service near you</p>
+            <p className="text-xs text-nearmee-text-sec mt-1">
               Try "plumbing", "meals", or "cleaning"
             </p>
           </div>
         ) : results.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span className="text-5xl mb-4">😔</span>
-            <p className="text-sm font-semibold text-nermee-text">No results found</p>
-            <p className="text-xs text-nermee-text-sec mt-1">Try a different keyword or category.</p>
+            <p className="text-sm font-semibold text-nearmee-text">No results found</p>
+            <p className="text-xs text-nearmee-text-sec mt-1">Try a different keyword or category.</p>
           </div>
         ) : (
           <>
-            <p className="text-xs text-nermee-text-sec mb-3">
+            <p className="text-xs text-nearmee-text-sec mb-3">
               {results.length} result{results.length !== 1 ? 's' : ''}
-              {query && <> for "<span className="font-semibold text-nermee-text">{query}</span>"</>}
+              {query && <> for "<span className="font-semibold text-nearmee-text">{query}</span>"</>}
             </p>
             <div className="flex flex-col gap-3">
               {results.map((service) => (

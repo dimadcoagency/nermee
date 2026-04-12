@@ -29,7 +29,7 @@ export default function SplashScreen() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/images/logo.png"
-        alt="NerMee"
+        alt="Nearmee"
         style={{
           width: '240px',
           height: 'auto',

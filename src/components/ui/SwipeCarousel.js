@@ -58,8 +58,8 @@ export default function SwipeCarousel({ items, renderItem }) {
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all duration-200 ${
               i === current
-                ? 'w-4 h-2 bg-nermee-green'
-                : 'w-2 h-2 bg-nermee-border'
+                ? 'w-4 h-2 bg-nearmee-coral'
+                : 'w-2 h-2 bg-nearmee-border'
             }`}
           />
         ))}

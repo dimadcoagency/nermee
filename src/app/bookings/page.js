@@ -68,19 +68,19 @@ export default function BookingsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-nermee-border px-4 pt-12 pb-0 sticky top-0 z-10">
-        <h1 className="text-2xl font-extrabold text-nermee-text mb-3">Bookings</h1>
+      <header className="bg-white border-b border-nearmee-border px-4 pt-12 pb-0 sticky top-0 z-10">
+        <h1 className="text-2xl font-extrabold text-nearmee-text mb-3">Bookings</h1>
 
         {/* Tabs */}
-        <div className="flex border-b border-nermee-border">
+        <div className="flex border-b border-nearmee-border">
           {TABS.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2.5 text-sm font-semibold transition-colors border-b-2 -mb-px ${
                 activeTab === tab
-                  ? 'border-nermee-green text-nermee-green'
-                  : 'border-transparent text-nermee-text-sec'
+                  ? 'border-nearmee-coral text-nearmee-coral'
+                  : 'border-transparent text-nearmee-text-sec'
               }`}
             >
               {tab}
@@ -93,8 +93,8 @@ export default function BookingsPage() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span className="text-5xl mb-4">📭</span>
-            <p className="text-sm font-semibold text-nermee-text">No {activeTab.toLowerCase()} bookings</p>
-            <p className="text-xs text-nermee-text-sec mt-1">
+            <p className="text-sm font-semibold text-nearmee-text">No {activeTab.toLowerCase()} bookings</p>
+            <p className="text-xs text-nearmee-text-sec mt-1">
               {activeTab === 'Upcoming'
                 ? 'Book a service to get started.'
                 : 'Your history will show here.'}
@@ -107,25 +107,25 @@ export default function BookingsPage() {
               return (
                 <button
                   key={booking.id}
-                  className="w-full bg-white border border-nermee-border rounded-xl p-4 text-left active:bg-nermee-surface transition-colors"
+                  className="w-full bg-white border border-nearmee-border rounded-xl p-4 text-left active:bg-nearmee-surface transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-nermee-text truncate">{booking.service}</p>
-                      <p className="text-xs text-nermee-text-sec mt-0.5">{booking.merchant}</p>
+                      <p className="text-sm font-bold text-nearmee-text truncate">{booking.service}</p>
+                      <p className="text-xs text-nearmee-text-sec mt-0.5">{booking.merchant}</p>
                     </div>
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg shrink-0 ${statusMeta.color} ${statusMeta.bg}`}>
                       {statusMeta.label}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-nermee-border">
-                    <div className="text-xs text-nermee-text-sec">
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-nearmee-border">
+                    <div className="text-xs text-nearmee-text-sec">
                       <span>{booking.date}</span>
                       <span className="mx-1.5">·</span>
                       <span>{booking.time}</span>
                     </div>
-                    <span className="text-sm font-bold text-nermee-text">{formatPrice(booking.amount)}</span>
+                    <span className="text-sm font-bold text-nearmee-text">{formatPrice(booking.amount)}</span>
                   </div>
 
                   {booking.status === 'pending' || booking.status === 'confirmed' ? (
@@ -133,16 +133,16 @@ export default function BookingsPage() {
                       <button className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50">
                         Cancel
                       </button>
-                      <button className="flex-1 py-2 rounded-lg bg-nermee-green text-white text-xs font-semibold active:opacity-90">
+                      <button className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90">
                         View Details
                       </button>
                     </div>
                   ) : booking.status === 'completed' ? (
                     <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-2 rounded-lg border border-nermee-border text-nermee-text-sec text-xs font-semibold active:bg-nermee-surface">
+                      <button className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface">
                         Leave a Review
                       </button>
-                      <button className="flex-1 py-2 rounded-lg bg-nermee-green text-white text-xs font-semibold active:opacity-90">
+                      <button className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90">
                         Book Again
                       </button>
                     </div>

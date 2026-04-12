@@ -15,8 +15,8 @@ export default function CategoryPills({ selected, onSelect }) {
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors',
               isActive
-                ? 'bg-nermee-green text-white'
-                : 'bg-nermee-surface text-nermee-text-sec hover:bg-nermee-border'
+                ? 'bg-nearmee-coral text-white'
+                : 'bg-nearmee-surface text-nearmee-text-sec hover:bg-nearmee-border'
             )}
           >
             <span>{cat.icon}</span>

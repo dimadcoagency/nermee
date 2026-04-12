@@ -8,15 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        nermee: {
-          green: '#00B14F',
-          dark: '#003D1A',
-          light: '#E6F9EE',
-          white: '#FFFFFF',
-          surface: '#F5F5F5',
-          border: '#E0E0E0',
-          text: '#111111',
-          'text-sec': '#888888',
+        nearmee: {
+          coral:       '#FF5757',
+          'coral-dark':'#E84E4E',
+          'coral-deep':'#9A2E2E',
+          light:       '#FFF0F0',
+          white:       '#FFFFFF',
+          surface:     '#F7F7F7',
+          border:      '#EEEEEE',
+          text:        '#111111',
+          'text-sec':  '#888888',
+          dark:        '#2D2D2D',
         },
       },
       fontFamily: {

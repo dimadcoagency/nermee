@@ -8,8 +8,8 @@ function getCategoryIcon(categoryId) {
 }
 
 const TIER_LABELS = {
-  pro:      { label: 'PRO', classes: 'bg-nermee-green text-white' },
-  business: { label: 'BIZ', classes: 'bg-nermee-dark text-white' },
+  pro:      { label: 'PRO', classes: 'bg-nearmee-coral text-white' },
+  business: { label: 'BIZ', classes: 'bg-nearmee-dark text-white' },
 };
 
 export default function ServiceCard({ service }) {
@@ -21,17 +21,17 @@ export default function ServiceCard({ service }) {
   return (
     <Link
       href={`/services/${id}`}
-      className="w-full bg-white border border-nermee-border rounded-xl p-3 flex gap-3 items-start text-left active:bg-nermee-surface transition-colors"
+      className="w-full bg-white border border-nearmee-border rounded-xl p-3 flex gap-3 items-start text-left active:bg-nearmee-surface transition-colors"
     >
       {/* Category icon */}
-      <div className="w-12 h-12 rounded-xl bg-nermee-light flex items-center justify-center text-2xl shrink-0">
+      <div className="w-12 h-12 rounded-xl bg-nearmee-light flex items-center justify-center text-2xl shrink-0">
         {getCategoryIcon(category)}
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-bold text-nermee-text leading-tight truncate flex-1">
+          <p className="text-sm font-bold text-nearmee-text leading-tight truncate flex-1">
             {merchant?.business_name}
           </p>
           {tier && (
@@ -40,14 +40,14 @@ export default function ServiceCard({ service }) {
             </span>
           )}
           {is_boosted && (
-            <span className="text-[9px] font-bold bg-nermee-dark text-white px-1.5 py-0.5 rounded shrink-0">
+            <span className="text-[9px] font-bold bg-nearmee-dark text-white px-1.5 py-0.5 rounded shrink-0">
               AD
             </span>
           )}
         </div>
 
         {/* Owner · distance */}
-        <p className="text-xs text-nermee-text-sec mt-0.5 truncate">
+        <p className="text-xs text-nearmee-text-sec mt-0.5 truncate">
           {merchant?.owner_name}
           {merchant?.distance_km != null && (
             <> · {merchant.distance_km} km</>
@@ -57,7 +57,7 @@ export default function ServiceCard({ service }) {
         <div className="flex items-center justify-between mt-2">
           {/* Rating */}
           {merchant?.rating_count > 0 ? (
-            <span className="flex items-center gap-0.5 text-xs text-nermee-text-sec">
+            <span className="flex items-center gap-0.5 text-xs text-nearmee-text-sec">
               <span className="text-amber-400">★</span>
               {merchant.rating_avg.toFixed(1)}
               <span className="ml-0.5">({merchant.rating_count})</span>
@@ -68,10 +68,10 @@ export default function ServiceCard({ service }) {
 
           {/* Price */}
           <div className="text-right">
-            <span className="text-base font-bold text-nermee-green">
+            <span className="text-base font-bold text-nearmee-coral">
               {formatPrice(price)}
             </span>
-            <span className="text-xs text-nermee-text-sec ml-1">{price_unit}</span>
+            <span className="text-xs text-nearmee-text-sec ml-1">{price_unit}</span>
           </div>
         </div>
       </div>

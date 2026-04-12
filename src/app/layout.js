@@ -4,17 +4,17 @@ import SplashScreen from '@/components/ui/SplashScreen';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata = {
-  title: 'Nermee — Services at your doorstep',
+  title: 'Nearmee — Services at your doorstep',
   description: 'Find trusted local service providers near you in Bayawan City and Dumaguete City, Negros Oriental.',
   keywords: ['services', 'plumbing', 'cleaning', 'meals', 'rides', 'Bayawan', 'Dumaguete', 'Philippines'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Nermee',
+    title: 'Nearmee',
   },
   openGraph: {
-    title: 'Nermee — Services at your doorstep',
+    title: 'Nearmee — Services at your doorstep',
     description: 'Find trusted local service providers near you in Bayawan City and Dumaguete City.',
     type: 'website',
   },
@@ -26,7 +26,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#00B14F',
+  themeColor: '#FF5757',
 };
 
 export default function RootLayout({ children }) {
@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="bg-nermee-surface min-h-screen font-sans antialiased">
+      <body className="bg-nearmee-surface min-h-screen font-sans antialiased">
         <AuthProvider>
           <div className="mx-auto max-w-app min-h-screen bg-white relative">
             <SplashScreen />

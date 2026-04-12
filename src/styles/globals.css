@@ -10,7 +10,7 @@
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: #F5F5F5;
+  background: #F7F7F7;
   color: #111111;
 }
 
@@ -26,6 +26,15 @@ body {
 /* PWA safe area bottom padding */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Input focus — coral brand */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #FF5757 !important;
+  box-shadow: 0 0 0 3px #FFF0F0;
+  outline: none;
 }
 
 /* ── Splash screen animations ─────────────────── */

@@ -1,5 +1,6 @@
-export const APP_NAME = 'Nermee';
+export const APP_NAME = 'Nearmee';
 export const APP_TAGLINE = 'Services at your doorstep';
+export const APP_DOMAIN = 'nearmee.app';
 
 export const CATEGORIES = [
   { id: 'all',        label: 'All',        icon: '✨' },
@@ -37,7 +38,7 @@ export const PRICE_UNITS = [
 
 export const BOOKING_STATUSES = {
   pending:     { label: 'Pending',     color: 'text-amber-500', bg: 'bg-amber-50' },
-  confirmed:   { label: 'Confirmed',   color: 'text-green-600', bg: 'bg-green-50' },
+  confirmed:   { label: 'Confirmed',   color: 'text-green-600',    bg: 'bg-green-50' },
   in_progress: { label: 'In Progress', color: 'text-blue-600',  bg: 'bg-blue-50' },
   completed:   { label: 'Completed',   color: 'text-gray-500',  bg: 'bg-gray-100' },
   cancelled:   { label: 'Cancelled',   color: 'text-red-500',   bg: 'bg-red-50' },

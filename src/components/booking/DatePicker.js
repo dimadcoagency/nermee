@@ -30,17 +30,17 @@ export default function DatePicker({ selected, onSelect }) {
             onClick={() => onSelect(iso)}
             className={`flex flex-col items-center px-3 py-2.5 rounded-xl shrink-0 min-w-[56px] transition-colors border ${
               active
-                ? 'bg-nermee-green border-nermee-green text-white'
-                : 'bg-white border-nermee-border text-nermee-text-sec'
+                ? 'bg-nearmee-coral border-nearmee-coral text-white'
+                : 'bg-white border-nearmee-border text-nearmee-text-sec'
             }`}
           >
-            <span className={`text-[10px] font-semibold uppercase ${active ? 'text-green-100' : 'text-nermee-text-sec'}`}>
+            <span className={`text-[10px] font-semibold uppercase ${active ? 'text-white/80' : 'text-nearmee-text-sec'}`}>
               {isToday ? 'Today' : day}
             </span>
-            <span className={`text-lg font-extrabold leading-tight ${active ? 'text-white' : 'text-nermee-text'}`}>
+            <span className={`text-lg font-extrabold leading-tight ${active ? 'text-white' : 'text-nearmee-text'}`}>
               {date}
             </span>
-            <span className={`text-[10px] font-medium ${active ? 'text-green-100' : 'text-nermee-text-sec'}`}>
+            <span className={`text-[10px] font-medium ${active ? 'text-white/80' : 'text-nearmee-text-sec'}`}>
               {month}
             </span>
           </button>

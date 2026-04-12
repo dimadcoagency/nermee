@@ -46,17 +46,17 @@ export default function ActivityPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-nermee-border px-4 pt-12 pb-4 sticky top-0 z-10">
-        <h1 className="text-2xl font-extrabold text-nermee-text">Activity</h1>
-        <p className="text-sm text-nermee-text-sec mt-0.5">Your recent bookings and updates</p>
+      <header className="bg-white border-b border-nearmee-border px-4 pt-12 pb-4 sticky top-0 z-10">
+        <h1 className="text-2xl font-extrabold text-nearmee-text">Activity</h1>
+        <p className="text-sm text-nearmee-text-sec mt-0.5">Your recent bookings and updates</p>
       </header>
 
       <main className="flex-1 px-4 py-4 pb-28">
         {MOCK_ACTIVITY.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <span className="text-5xl mb-4">📭</span>
-            <p className="text-sm font-semibold text-nermee-text">No activity yet</p>
-            <p className="text-xs text-nermee-text-sec mt-1">Your booking history will appear here.</p>
+            <p className="text-sm font-semibold text-nearmee-text">No activity yet</p>
+            <p className="text-xs text-nearmee-text-sec mt-1">Your booking history will appear here.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -65,20 +65,20 @@ export default function ActivityPage() {
               return (
                 <button
                   key={item.id}
-                  className="w-full bg-white border border-nermee-border rounded-xl p-4 text-left active:bg-nermee-surface transition-colors"
+                  className="w-full bg-white border border-nearmee-border rounded-xl p-4 text-left active:bg-nearmee-surface transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-nermee-text truncate">{item.service}</p>
-                      <p className="text-xs text-nermee-text-sec mt-0.5">{item.merchant}</p>
+                      <p className="text-sm font-bold text-nearmee-text truncate">{item.service}</p>
+                      <p className="text-xs text-nearmee-text-sec mt-0.5">{item.merchant}</p>
                     </div>
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg shrink-0 ${statusMeta.color} ${statusMeta.bg}`}>
                       {statusMeta.label}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-xs text-nermee-text-sec">{item.date}</span>
-                    <span className="text-sm font-bold text-nermee-text">{formatPrice(item.amount)}</span>
+                    <span className="text-xs text-nearmee-text-sec">{item.date}</span>
+                    <span className="text-sm font-bold text-nearmee-text">{formatPrice(item.amount)}</span>
                   </div>
                 </button>
               );

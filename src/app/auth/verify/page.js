@@ -100,7 +100,7 @@ export default function VerifyPage() {
     <div className="flex flex-col min-h-screen bg-white px-6">
       {/* Back */}
       <div className="pt-12 pb-2">
-        <Link href="/auth/login" className="inline-flex items-center gap-1 text-nermee-text-sec text-sm">
+        <Link href="/auth/login" className="inline-flex items-center gap-1 text-nearmee-text-sec text-sm">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <path d="m15 18-6-6 6-6" />
           </svg>
@@ -109,14 +109,14 @@ export default function VerifyPage() {
       </div>
 
       <div className="mt-8 mb-10">
-        <div className="w-14 h-14 rounded-2xl bg-nermee-light flex items-center justify-center mb-5">
+        <div className="w-14 h-14 rounded-2xl bg-nearmee-light flex items-center justify-center mb-5">
           <span className="text-3xl">📱</span>
         </div>
-        <h1 className="text-2xl font-extrabold text-nermee-text">Enter your code</h1>
-        <p className="text-sm text-nermee-text-sec mt-1">
-          We sent a 6-digit code to <span className="font-semibold text-nermee-text">{phone}</span>
+        <h1 className="text-2xl font-extrabold text-nearmee-text">Enter your code</h1>
+        <p className="text-sm text-nearmee-text-sec mt-1">
+          We sent a 6-digit code to <span className="font-semibold text-nearmee-text">{phone}</span>
         </p>
-        <p className="text-xs text-nermee-text-sec mt-1">(Use <span className="font-bold">123456</span> to test)</p>
+        <p className="text-xs text-nearmee-text-sec mt-1">(Use <span className="font-bold">123456</span> to test)</p>
       </div>
 
       {/* OTP inputs */}
@@ -132,8 +132,8 @@ export default function VerifyPage() {
             onChange={(e) => handleDigit(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
             className={`w-12 h-14 text-center text-xl font-bold rounded-xl border-2 outline-none transition-all
-              ${d ? 'border-nermee-green bg-nermee-light text-nermee-green' : 'border-nermee-border bg-white text-nermee-text'}
-              focus:border-nermee-green`}
+              ${d ? 'border-nearmee-coral bg-nearmee-light text-nearmee-coral' : 'border-nearmee-border bg-white text-nearmee-text'}
+              focus:border-nearmee-coral`}
           />
         ))}
       </div>
@@ -147,7 +147,7 @@ export default function VerifyPage() {
         onClick={() => verifyOTP(digits.join(''))}
         disabled={filled < 6 || loading}
         className={`w-full py-4 rounded-xl text-white text-sm font-bold transition-opacity ${
-          filled < 6 || loading ? 'bg-nermee-green opacity-50' : 'bg-nermee-green active:opacity-90'
+          filled < 6 || loading ? 'bg-nearmee-coral opacity-50' : 'bg-nearmee-coral active:opacity-90'
         }`}
       >
         {loading ? 'Verifying…' : 'Verify Code'}
@@ -156,13 +156,13 @@ export default function VerifyPage() {
       {/* Resend */}
       <div className="text-center mt-6">
         {resendTimer > 0 ? (
-          <p className="text-sm text-nermee-text-sec">
-            Resend code in <span className="font-semibold text-nermee-text">{resendTimer}s</span>
+          <p className="text-sm text-nearmee-text-sec">
+            Resend code in <span className="font-semibold text-nearmee-text">{resendTimer}s</span>
           </p>
         ) : (
           <button
             onClick={handleResend}
-            className="text-sm font-semibold text-nermee-green"
+            className="text-sm font-semibold text-nearmee-coral"
           >
             Resend Code
           </button>
