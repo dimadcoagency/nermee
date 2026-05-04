@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-const MOCK_OTP = '123456'; // Replace with Supabase verify in Sprint 2
+import { createClient } from '@/lib/supabase/client';
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -13,17 +12,20 @@ export default function VerifyPage() {
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
   const [phone, setPhone] = useState('');
+  const [e164, setE164] = useState('');
   const inputRefs = useRef([]);
+  const supabase = createClient();
 
   useEffect(() => {
-    const stored = localStorage.getItem('nermee_pending_phone');
+    const stored = localStorage.getItem('nearmee_pending_phone');
     if (!stored) { router.replace('/auth/login'); return; }
-    // Display masked: 0917 *** 4567
-    setPhone(`${stored.slice(0, 4)} *** ${stored.slice(7)}`);
+    setE164(stored);
+    // Display masked: +63917 *** 4567
+    const local = '0' + stored.slice(3);
+    setPhone(`${local.slice(0, 4)} *** ${local.slice(7)}`);
     inputRefs.current[0]?.focus();
   }, []);
 
-  // Countdown for resend
   useEffect(() => {
     if (resendTimer <= 0) return;
     const t = setTimeout(() => setResendTimer((s) => s - 1), 1000);
@@ -36,12 +38,9 @@ export default function VerifyPage() {
     next[index] = digit;
     setDigits(next);
     setError('');
-    if (digit && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-    // Auto-verify when all 6 filled
+    if (digit && index < 5) inputRefs.current[index + 1]?.focus();
     if (digit && index === 5) {
-      const code = [...next].join('');
+      const code = next.join('');
       if (code.length === 6) verifyOTP(code);
     }
   }
@@ -63,23 +62,35 @@ export default function VerifyPage() {
   }
 
   async function verifyOTP(code) {
+    if (!e164) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
 
-    // Mock: accept 123456 — replace with Supabase verifyOtp() in Sprint 2
-    if (code !== MOCK_OTP) {
-      setError('Incorrect code. Try 123456 for now.');
+    const { data, error: verifyError } = await supabase.auth.verifyOtp({
+      phone: e164,
+      token: code,
+      type: 'sms',
+    });
+
+    if (verifyError) {
+      setError('Incorrect code. Please try again.');
       setLoading(false);
       setDigits(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
       return;
     }
 
-    // Check if user already has a profile
-    const stored = localStorage.getItem('nermee_user');
+    localStorage.removeItem('nearmee_pending_phone');
+
+    // Check if profile is complete (has a full_name set)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', data.user.id)
+      .single();
+
     setLoading(false);
 
-    if (stored) {
+    if (profile?.full_name) {
       router.replace('/');
     } else {
       router.replace('/auth/setup');
@@ -87,10 +98,11 @@ export default function VerifyPage() {
   }
 
   async function handleResend() {
-    if (resendTimer > 0) return;
+    if (resendTimer > 0 || !e164) return;
     setResendTimer(30);
     setDigits(['', '', '', '', '', '']);
     setError('');
+    await supabase.auth.signInWithOtp({ phone: e164 });
     inputRefs.current[0]?.focus();
   }
 
@@ -98,7 +110,6 @@ export default function VerifyPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white px-6">
-      {/* Back */}
       <div className="pt-12 pb-2">
         <Link href="/auth/login" className="inline-flex items-center gap-1 text-nearmee-text-sec text-sm">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -116,10 +127,8 @@ export default function VerifyPage() {
         <p className="text-sm text-nearmee-text-sec mt-1">
           We sent a 6-digit code to <span className="font-semibold text-nearmee-text">{phone}</span>
         </p>
-        <p className="text-xs text-nearmee-text-sec mt-1">(Use <span className="font-bold">123456</span> to test)</p>
       </div>
 
-      {/* OTP inputs */}
       <div className="flex gap-3 justify-center mb-6" onPaste={handlePaste}>
         {digits.map((d, i) => (
           <input
@@ -138,11 +147,8 @@ export default function VerifyPage() {
         ))}
       </div>
 
-      {error && (
-        <p className="text-xs text-red-500 text-center mb-4">{error}</p>
-      )}
+      {error && <p className="text-xs text-red-500 text-center mb-4">{error}</p>}
 
-      {/* Verify button */}
       <button
         onClick={() => verifyOTP(digits.join(''))}
         disabled={filled < 6 || loading}
@@ -153,17 +159,13 @@ export default function VerifyPage() {
         {loading ? 'Verifying…' : 'Verify Code'}
       </button>
 
-      {/* Resend */}
       <div className="text-center mt-6">
         {resendTimer > 0 ? (
           <p className="text-sm text-nearmee-text-sec">
             Resend code in <span className="font-semibold text-nearmee-text">{resendTimer}s</span>
           </p>
         ) : (
-          <button
-            onClick={handleResend}
-            className="text-sm font-semibold text-nearmee-coral"
-          >
+          <button onClick={handleResend} className="text-sm font-semibold text-nearmee-coral">
             Resend Code
           </button>
         )}

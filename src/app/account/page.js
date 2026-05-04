@@ -34,7 +34,7 @@ function getInitials(name, lastName) {
 }
 
 export default function AccountPage() {
-  const { user, loading, logout } = useAuth();
+  const { user, profile, loading, logout } = useAuth();
   const router = useRouter();
 
   if (loading) {
@@ -54,19 +54,16 @@ export default function AccountPage() {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-nearmee-coral flex items-center justify-center shrink-0">
               <span className="text-xl font-bold text-white">
-                {getInitials(user.name, user.lastName)}
+                {getInitials(profile?.full_name?.split(' ')[0], profile?.full_name?.split(' ')[1])}
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-base font-bold text-nearmee-text">
-                {user.name} {user.lastName}
+                {profile?.full_name || 'My Account'}
               </p>
               <p className="text-sm text-nearmee-text-sec mt-0.5">
-                {user.phone ? `+63 ${user.phone.slice(1)}` : ''}
+                {user?.phone || profile?.phone || ''}
               </p>
-              {user.email ? (
-                <p className="text-xs text-nearmee-text-sec truncate">{user.email}</p>
-              ) : null}
             </div>
             <button
               onClick={() => router.push('/auth/setup')}
@@ -115,10 +112,10 @@ export default function AccountPage() {
         </div>
 
         {/* Location badge */}
-        {user?.cityLabel && (
+        {profile?.city && (
           <div className="flex items-center gap-1.5 mt-3 px-1">
             <span className="text-sm">📍</span>
-            <span className="text-xs text-nearmee-text-sec">{user.cityLabel}</span>
+            <span className="text-xs text-nearmee-text-sec">{profile.city}</span>
           </div>
         )}
       </header>

@@ -1,35 +1,54 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);       // { phone, name, lastName, email, city }
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
-  // Load persisted user from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('nermee_user');
-      if (stored) setUser(JSON.parse(stored));
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  function saveUser(userData) {
-    setUser(userData);
-    localStorage.setItem('nermee_user', JSON.stringify(userData));
+  async function fetchProfile(userId) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    setProfile(data ?? null);
   }
 
-  function logout() {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
+      else setProfile(null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function logout() {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('nermee_user');
-    localStorage.removeItem('nermee_pending_phone');
+    setProfile(null);
+  }
+
+  async function refreshProfile() {
+    if (user) await fetchProfile(user.id);
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, saveUser, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,19 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { CITIES } from '@/lib/constants';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ProfileSetupPage() {
   const router = useRouter();
-  const { saveUser } = useAuth();
-
-  const [form, setForm] = useState({
-    name: '',
-    lastName: '',
-    email: '',
-    city: 'bayawan',
-  });
+  const { user, refreshProfile } = useAuth();
+  const [form, setForm] = useState({ name: '', lastName: '', email: '', city: 'bayawan' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const supabase = createClient();
 
   function set(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -39,28 +35,31 @@ export default function ProfileSetupPage() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
 
-    const phone = localStorage.getItem('nermee_pending_phone') ?? '';
     const cityLabel = CITIES.find((c) => c.id === form.city)?.label ?? form.city;
+    const fullName = `${form.name.trim()} ${form.lastName.trim()}`;
 
-    saveUser({
-      phone,
-      name: form.name.trim(),
-      lastName: form.lastName.trim(),
-      email: form.email.trim(),
-      city: form.city,
-      cityLabel,
-    });
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: fullName,
+        city: cityLabel,
+      })
+      .eq('id', user?.id);
 
-    localStorage.removeItem('nermee_pending_phone');
+    if (error) {
+      setErrors({ name: 'Something went wrong. Please try again.' });
+      setLoading(false);
+      return;
+    }
+
+    await refreshProfile();
     setLoading(false);
     router.replace('/');
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-white px-6 pb-10">
-      {/* Header */}
       <div className="pt-12 mb-8">
         <div className="w-14 h-14 rounded-2xl bg-nearmee-coral flex items-center justify-center mb-5">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
@@ -73,7 +72,6 @@ export default function ProfileSetupPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        {/* Name row */}
         <div className="flex gap-3">
           <div className="flex-1">
             <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">
@@ -110,7 +108,6 @@ export default function ProfileSetupPage() {
           </div>
         </div>
 
-        {/* Email */}
         <div>
           <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">
             Email <span className="text-nearmee-text-sec font-normal normal-case">(optional)</span>
@@ -128,7 +125,6 @@ export default function ProfileSetupPage() {
           {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
         </div>
 
-        {/* Location */}
         <div>
           <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">
             Location <span className="text-red-400">*</span>
@@ -155,7 +151,6 @@ export default function ProfileSetupPage() {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
