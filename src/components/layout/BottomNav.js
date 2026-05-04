@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HIDDEN_ON = ['/auth/login', '/auth/verify', '/auth/setup'];
 
@@ -61,8 +62,10 @@ const NAV_ITEMS = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   if (HIDDEN_ON.includes(pathname)) return null;
+  if (!loading && !user) return null;
 
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nearmee-border safe-bottom z-20">
