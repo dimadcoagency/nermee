@@ -1,13 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
-const PROTECTED_ROUTES = ['/bookings', '/account/edit', '/merchant'];
-
 export async function middleware(request) {
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_ROUTES.some(r => pathname.startsWith(r));
-  if (!isProtected) return NextResponse.next();
-
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -27,14 +21,12 @@ export async function middleware(request) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
-  }
+  // Refresh session if expired — keeps cookies in sync
+  await supabase.auth.getSession();
 
   return response;
 }
 
 export const config = {
-  matcher: ['/bookings/:path*', '/account/edit/:path*', '/merchant/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|icons|images|manifest.json).*)'],
 };

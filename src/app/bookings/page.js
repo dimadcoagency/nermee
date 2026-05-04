@@ -1,77 +1,57 @@
 'use client';
 
 import { useState } from 'react';
-import { BOOKING_STATUSES } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBookings } from '@/lib/hooks/useBookings';
+import { BOOKING_STATUSES, CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
 const TABS = ['Upcoming', 'Completed', 'Cancelled'];
 
-const MOCK_BOOKINGS = [
-  {
-    id: 'b1',
-    service: 'Plumbing Repair & Pipe Fixing',
-    merchant: 'Mang Nestor Plumbing',
-    date: 'Apr 8, 2026',
-    time: '10:00 AM',
-    amount: 350,
-    status: 'confirmed',
-    category: 'upcoming',
-  },
-  {
-    id: 'b2',
-    service: 'Tricycle Ride – Bayawan Poblacion',
-    merchant: "JM's Ride Service",
-    date: 'Apr 7, 2026',
-    time: '8:00 AM',
-    amount: 50,
-    status: 'pending',
-    category: 'upcoming',
-  },
-  {
-    id: 'b3',
-    service: 'Home-cooked Lunch Box Delivery',
-    merchant: "Ate Leny's Homemade Meals",
-    date: 'Apr 4, 2026',
-    time: '12:00 PM',
-    amount: 85,
-    status: 'completed',
-    category: 'completed',
-  },
-  {
-    id: 'b4',
-    service: 'House Deep Cleaning (2–3 BR)',
-    merchant: 'SparkleClean Services',
-    date: 'Apr 2, 2026',
-    time: '9:00 AM',
-    amount: 500,
-    status: 'completed',
-    category: 'completed',
-  },
-  {
-    id: 'b5',
-    service: 'Laundry Pick-up & Delivery',
-    merchant: 'Fresh Fold Laundry',
-    date: 'Mar 30, 2026',
-    time: '2:00 PM',
-    amount: 135,
-    status: 'cancelled',
-    category: 'cancelled',
-  },
-];
+function getCategoryIcon(categoryId) {
+  return CATEGORIES.find((c) => c.id === categoryId)?.icon ?? '🛠️';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-PH', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+}
+
+function tabKey(booking) {
+  if (['pending', 'confirmed', 'in_progress'].includes(booking.status)) return 'upcoming';
+  if (booking.status === 'completed') return 'completed';
+  return 'cancelled';
+}
 
 export default function BookingsPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const { bookings, loading: bookingsLoading, cancelBooking } = useBookings(user?.id);
   const [activeTab, setActiveTab] = useState('Upcoming');
 
-  const tabKey = activeTab.toLowerCase();
-  const filtered = MOCK_BOOKINGS.filter((b) => b.category === tabKey);
+  // Redirect to login if not authenticated
+  if (!authLoading && !user) {
+    router.replace('/auth/login');
+    return null;
+  }
+
+  if (authLoading || bookingsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-2 border-nearmee-coral border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const filtered = bookings.filter((b) => tabKey(b) === activeTab.toLowerCase());
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* Header */}
       <header className="bg-white border-b border-nearmee-border px-4 pt-12 pb-0 sticky top-0 z-10">
         <h1 className="text-2xl font-extrabold text-nearmee-text mb-3">Bookings</h1>
-
-        {/* Tabs */}
         <div className="flex border-b border-nearmee-border">
           {TABS.map((tab) => (
             <button
@@ -95,24 +75,33 @@ export default function BookingsPage() {
             <span className="text-5xl mb-4">📭</span>
             <p className="text-sm font-semibold text-nearmee-text">No {activeTab.toLowerCase()} bookings</p>
             <p className="text-xs text-nearmee-text-sec mt-1">
-              {activeTab === 'Upcoming'
-                ? 'Book a service to get started.'
-                : 'Your history will show here.'}
+              {activeTab === 'Upcoming' ? 'Book a service to get started.' : 'Your history will show here.'}
             </p>
+            {activeTab === 'Upcoming' && (
+              <button
+                onClick={() => router.push('/')}
+                className="mt-4 px-6 py-2.5 bg-nearmee-coral text-white text-sm font-bold rounded-xl"
+              >
+                Browse Services
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {filtered.map((booking) => {
-              const statusMeta = BOOKING_STATUSES[booking.status];
+              const statusMeta = BOOKING_STATUSES[booking.status] ?? BOOKING_STATUSES.pending;
               return (
-                <button
+                <div
                   key={booking.id}
-                  className="w-full bg-white border border-nearmee-border rounded-xl p-4 text-left active:bg-nearmee-surface transition-colors"
+                  className="bg-white border border-nearmee-border rounded-xl p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-nearmee-text truncate">{booking.service}</p>
-                      <p className="text-xs text-nearmee-text-sec mt-0.5">{booking.merchant}</p>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-xl shrink-0">{getCategoryIcon(booking.service?.category)}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-nearmee-text truncate">{booking.service?.title}</p>
+                        <p className="text-xs text-nearmee-text-sec mt-0.5">{booking.merchant?.business_name}</p>
+                      </div>
                     </div>
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg shrink-0 ${statusMeta.color} ${statusMeta.bg}`}>
                       {statusMeta.label}
@@ -121,33 +110,40 @@ export default function BookingsPage() {
 
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-nearmee-border">
                     <div className="text-xs text-nearmee-text-sec">
-                      <span>{booking.date}</span>
+                      <span>{formatDate(booking.booking_date)}</span>
                       <span className="mx-1.5">·</span>
-                      <span>{booking.time}</span>
+                      <span>{booking.booking_time}</span>
                     </div>
-                    <span className="text-sm font-bold text-nearmee-text">{formatPrice(booking.amount)}</span>
+                    <span className="text-sm font-bold text-nearmee-text">{formatPrice(booking.total_price)}</span>
                   </div>
 
-                  {booking.status === 'pending' || booking.status === 'confirmed' ? (
+                  {['pending', 'confirmed'].includes(booking.status) && (
                     <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50">
+                      <button
+                        onClick={() => cancelBooking(booking.id)}
+                        className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50"
+                      >
                         Cancel
                       </button>
                       <button className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90">
                         View Details
                       </button>
                     </div>
-                  ) : booking.status === 'completed' ? (
+                  )}
+                  {booking.status === 'completed' && (
                     <div className="flex gap-2 mt-3">
                       <button className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface">
                         Leave a Review
                       </button>
-                      <button className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90">
+                      <button
+                        onClick={() => router.push(`/services/${booking.service?.id}`)}
+                        className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90"
+                      >
                         Book Again
                       </button>
                     </div>
-                  ) : null}
-                </button>
+                  )}
+                </div>
               );
             })}
           </div>

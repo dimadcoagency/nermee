@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CategoryPills from '@/components/services/CategoryPills';
 import ServiceCard from '@/components/services/ServiceCard';
 import FeaturedServiceCard from '@/components/services/FeaturedServiceCard';
 import SwipeCarousel from '@/components/ui/SwipeCarousel';
 import { useAuth } from '@/contexts/AuthContext';
-import { MOCK_SERVICES, CITIES } from '@/lib/constants';
+import { useServices } from '@/lib/hooks/useServices';
+import { CITIES } from '@/lib/constants';
 
 // ── Landing page for unauthenticated users ──────────────────────────────────
 function LandingPage() {
@@ -68,38 +69,26 @@ function LandingPage() {
 
 // ── Home feed for authenticated users ───────────────────────────────────────
 export default function HomePage() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCity, setSelectedCity] = useState('bayawan');
 
   const cityLabel = CITIES.find((c) => c.id === selectedCity)?.label ?? '';
+  const cityName = selectedCity === 'bayawan' ? 'Bayawan City' : 'Dumaguete City';
 
-  const cityServices = useMemo(() =>
-    MOCK_SERVICES.filter((s) =>
-      s.city.toLowerCase().includes(selectedCity === 'bayawan' ? 'bayawan' : 'dumaguete')
-    ),
-    [selectedCity]
-  );
+  const { services, loading: servicesLoading } = useServices({
+    city: cityName,
+    category: selectedCategory,
+  });
 
-  const promotedServices = useMemo(() =>
-    cityServices.filter((s) => s.is_boosted).slice(0, 3),
-    [cityServices]
-  );
+  const promotedServices = services.filter((s) => s.is_boosted).slice(0, 3);
+  const topRatedServices = services
+    .filter((s) => !s.is_boosted)
+    .sort((a, b) => (b.merchant?.rating_avg ?? 0) - (a.merchant?.rating_avg ?? 0))
+    .slice(0, 3);
+  const allServices = [...services].sort((a, b) => b.is_boosted - a.is_boosted);
 
-  const topRatedServices = useMemo(() =>
-    cityServices
-      .filter((s) => !s.is_boosted)
-      .sort((a, b) => b.merchant.rating_avg - a.merchant.rating_avg)
-      .slice(0, 3),
-    [cityServices]
-  );
-
-  const allServices = useMemo(() =>
-    cityServices
-      .filter((s) => selectedCategory === 'all' || s.category === selectedCategory)
-      .sort((a, b) => b.is_boosted - a.is_boosted),
-    [cityServices, selectedCategory]
-  );
+  const loading = authLoading;
 
   // Show loading spinner briefly
   if (loading) {

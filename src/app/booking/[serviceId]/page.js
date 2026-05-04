@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import DatePicker from '@/components/booking/DatePicker';
 import TimePicker from '@/components/booking/TimePicker';
-import { MOCK_SERVICES, CATEGORIES } from '@/lib/constants';
+import { useService } from '@/lib/hooks/useServices';
+import { createBooking } from '@/lib/hooks/useBookings';
+import { useAuth } from '@/contexts/AuthContext';
+import { CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
 function getCategoryIcon(categoryId) {
@@ -14,14 +17,23 @@ function getCategoryIcon(categoryId) {
 export default function BookingPage() {
   const { serviceId } = useParams();
   const router = useRouter();
-
-  const service = useMemo(() => MOCK_SERVICES.find((s) => s.id === serviceId), [serviceId]);
+  const { user } = useAuth();
+  const { service, loading: serviceLoading } = useService(serviceId);
 
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTime, setSelectedTime] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  if (serviceLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-2 border-nearmee-coral border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!service) {
     return (
@@ -33,36 +45,50 @@ export default function BookingPage() {
 
   const canConfirm = selectedDate && selectedTime;
 
-  async function handleConfirm() {
-    if (!canConfirm) return;
-    setLoading(true);
+  // Get time slots for the selected date
+  const selectedDayOfWeek = new Date(selectedDate + 'T00:00:00').getDay();
+  const timeSlots = (service.availability ?? [])
+    .filter((a) => a.day_of_week === selectedDayOfWeek && a.is_available)
+    .map((a) => a.time_slot);
 
-    // Store booking in localStorage for confirmed page
-    const booking = {
-      id: `BK${Date.now()}`,
+  async function handleConfirm() {
+    if (!canConfirm || !user) return;
+    setLoading(true);
+    setError('');
+
+    const { data, error: bookingError } = await createBooking({
+      customerId: user.id,
+      merchantId: service.merchant.id,
       serviceId: service.id,
-      serviceTitle: service.title,
-      merchantName: service.merchant.business_name,
-      ownerName: service.merchant.owner_name,
-      category: service.category,
-      price: service.price,
-      price_unit: service.price_unit,
       date: selectedDate,
       time: selectedTime,
       notes,
-      status: 'pending',
-      bookedAt: new Date().toISOString(),
-    };
+      price: service.price,
+    });
 
-    localStorage.setItem('nermee_last_booking', JSON.stringify(booking));
-    await new Promise((r) => setTimeout(r, 800));
+    if (bookingError) {
+      setError('Could not confirm booking. Please try again.');
+      setLoading(false);
+      return;
+    }
+
+    // Store ref for confirmed page
+    localStorage.setItem('nearmee_last_booking', JSON.stringify({
+      id: data.id,
+      serviceTitle: service.title,
+      merchantName: service.merchant.business_name,
+      date: selectedDate,
+      time: selectedTime,
+      price: service.price,
+      price_unit: service.price_unit,
+    }));
+
     setLoading(false);
     router.push('/booking/confirmed');
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* ── Header ─────────────────────────────── */}
       <header className="flex items-center gap-3 px-4 pt-12 pb-3 bg-white border-b border-nearmee-border sticky top-0 z-10">
         <button onClick={() => router.back()} className="p-1 -ml-1 text-nearmee-text-sec">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -73,14 +99,14 @@ export default function BookingPage() {
       </header>
 
       <main className="flex-1 pb-36">
-        {/* ── Service summary ─────────────────── */}
+        {/* Service summary */}
         <div className="flex items-center gap-3 px-4 py-3 bg-nearmee-surface border-b border-nearmee-border">
           <div className="w-12 h-12 rounded-xl bg-nearmee-light flex items-center justify-center text-2xl shrink-0">
             {getCategoryIcon(service.category)}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-nearmee-text truncate">{service.title}</p>
-            <p className="text-xs text-nearmee-text-sec mt-0.5">{service.merchant.business_name}</p>
+            <p className="text-xs text-nearmee-text-sec mt-0.5">{service.merchant?.business_name}</p>
           </div>
           <div className="text-right shrink-0">
             <p className="text-sm font-extrabold text-nearmee-coral">{formatPrice(service.price)}</p>
@@ -88,23 +114,19 @@ export default function BookingPage() {
           </div>
         </div>
 
-        {/* ── Select Date ─────────────────────── */}
+        {/* Select Date */}
         <section className="px-4 py-4 border-b border-nearmee-border">
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">Select Date</p>
           <DatePicker selected={selectedDate} onSelect={(d) => { setSelectedDate(d); setSelectedTime(''); }} />
         </section>
 
-        {/* ── Select Time ─────────────────────── */}
+        {/* Select Time */}
         <section className="px-4 py-4 border-b border-nearmee-border">
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">Select Time</p>
-          <TimePicker
-            slots={service.availability}
-            selected={selectedTime}
-            onSelect={setSelectedTime}
-          />
+          <TimePicker slots={timeSlots} selected={selectedTime} onSelect={setSelectedTime} />
         </section>
 
-        {/* ── Notes ───────────────────────────── */}
+        {/* Notes */}
         <section className="px-4 py-4 border-b border-nearmee-border">
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">
             Notes <span className="font-normal normal-case">(optional)</span>
@@ -118,15 +140,15 @@ export default function BookingPage() {
           />
         </section>
 
-        {/* ── Booking summary ─────────────────── */}
+        {/* Booking summary */}
         <section className="px-4 py-4">
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">Booking Summary</p>
           <div className="bg-nearmee-surface rounded-xl p-4 space-y-2.5">
             {[
-              { label: 'Service', value: service.title },
-              { label: 'Provider', value: service.merchant.business_name },
-              { label: 'Date', value: selectedDate || '—' },
-              { label: 'Time', value: selectedTime || '—' },
+              { label: 'Service',  value: service.title },
+              { label: 'Provider', value: service.merchant?.business_name },
+              { label: 'Date',     value: selectedDate || '—' },
+              { label: 'Time',     value: selectedTime || '—' },
             ].map(({ label, value }) => (
               <div key={label} className="flex justify-between items-start gap-4">
                 <span className="text-xs text-nearmee-text-sec shrink-0">{label}</span>
@@ -143,11 +165,12 @@ export default function BookingPage() {
           <p className="text-xs text-nearmee-text-sec mt-2 text-center">
             Payment is made directly to the provider (cash or GCash).
           </p>
+          {error && <p className="text-xs text-red-500 text-center mt-2">{error}</p>}
         </section>
       </main>
 
-      {/* ── Confirm CTA ─────────────────────────── */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nearmee-border px-4 py-3 safe-bottom z-10">
+      {/* Confirm CTA */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nearmee-border px-4 py-3 z-10">
         {!canConfirm && (
           <p className="text-xs text-center text-nearmee-text-sec mb-2">
             {!selectedDate ? 'Select a date' : 'Select a time slot'}
