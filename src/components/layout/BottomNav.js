@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const HIDDEN_ON = ['/auth/login', '/auth/verify', '/auth/setup'];
+const HIDDEN_STARTS_WITH = ['/services/', '/booking/'];
 
 const NAV_ITEMS = [
   {
@@ -65,6 +66,7 @@ export default function BottomNav() {
   const { user, loading } = useAuth();
 
   if (HIDDEN_ON.includes(pathname)) return null;
+  if (HIDDEN_STARTS_WITH.some((p) => pathname.startsWith(p))) return null;
   if (!loading && !user) return null;
 
   return (
