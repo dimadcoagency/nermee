@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import BottomNav from '@/components/layout/BottomNav';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata = {
   title: 'Nearmee — Services at your doorstep',
@@ -41,10 +42,12 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-nearmee-surface min-h-screen font-sans antialiased">
         <AuthProvider>
-          <div className="mx-auto max-w-app min-h-screen bg-white relative">
-            {children}
-            <BottomNav />
-          </div>
+          <ToastProvider>
+            <div className="mx-auto max-w-app min-h-screen bg-white relative">
+              {children}
+              <BottomNav />
+            </div>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMerchantBookings } from '@/lib/hooks/useMerchant';
+import { useToast } from '@/components/ui/Toast';
 import { BOOKING_STATUSES, CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
@@ -22,6 +23,7 @@ function formatDate(dateStr) {
 export default function MerchantBookingsPage() {
   const { merchant } = useAuth();
   const { bookings, loading, updateStatus } = useMerchantBookings(merchant?.id);
+  const { show: showToast } = useToast();
   const [activeTab, setActiveTab] = useState('Pending');
 
   const filtered = bookings.filter((b) => b.status === activeTab.toLowerCase());
@@ -102,13 +104,13 @@ export default function MerchantBookingsPage() {
                   {booking.status === 'pending' && (
                     <div className="flex gap-2">
                       <button
-                        onClick={() => updateStatus(booking.id, 'cancelled')}
+                        onClick={async () => { await updateStatus(booking.id, 'cancelled'); showToast('Booking declined'); }}
                         className="flex-1 py-2.5 rounded-xl border border-red-200 text-red-500 text-xs font-bold active:bg-red-50"
                       >
                         Decline
                       </button>
                       <button
-                        onClick={() => updateStatus(booking.id, 'confirmed')}
+                        onClick={async () => { await updateStatus(booking.id, 'confirmed'); showToast('Booking accepted!'); }}
                         className="flex-1 py-2.5 rounded-xl bg-nearmee-coral text-white text-xs font-bold active:opacity-90"
                       >
                         Accept
@@ -117,7 +119,7 @@ export default function MerchantBookingsPage() {
                   )}
                   {booking.status === 'confirmed' && (
                     <button
-                      onClick={() => updateStatus(booking.id, 'completed')}
+                      onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
                       className="w-full py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
                     >
                       Mark as Completed

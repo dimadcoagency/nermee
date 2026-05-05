@@ -146,11 +146,25 @@ export default function ServiceDetailPage() {
 
         {/* Service area */}
         {merchant?.service_area && (
-          <section className="px-4 py-4">
+          <section className="px-4 py-4 border-b border-nearmee-border">
             <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-2">Service Area</p>
             <p className="text-sm text-nearmee-text-sec">{merchant.service_area}</p>
           </section>
         )}
+
+        {/* Report */}
+        <section className="px-4 py-4">
+          <button
+            onClick={() => router.push(`/report?service=${service.id}&merchant=${merchant?.id}`)}
+            className="flex items-center gap-2 text-xs text-nearmee-text-sec active:text-red-500"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+              <line x1="4" y1="22" x2="4" y2="15" />
+            </svg>
+            Report this listing
+          </button>
+        </section>
       </main>
 
       {/* Sticky Book Now */}

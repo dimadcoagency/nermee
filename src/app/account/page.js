@@ -10,9 +10,10 @@ function getInitials(fullName) {
 }
 
 const SUPPORT_ITEMS = [
-  { icon: '❓', label: 'Help & FAQ', desc: 'How Nearmee works' },
-  { icon: '🚩', label: 'Report a Problem', desc: 'Flag a service or merchant' },
-  { icon: '📄', label: 'Terms & Privacy', desc: 'Legal stuff' },
+  { icon: '❓', label: 'Help & FAQ', desc: 'How Nearmee works', href: null },
+  { icon: '🚩', label: 'Report a Problem', desc: 'Flag a service or merchant', href: '/report' },
+  { icon: '📄', label: 'Terms of Service', desc: 'Usage terms', href: '/terms' },
+  { icon: '🔒', label: 'Privacy Policy', desc: 'How we protect your data', href: '/privacy' },
 ];
 
 export default function AccountPage() {
@@ -169,8 +170,9 @@ export default function AccountPage() {
         <div>
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-2 px-1">Support</p>
           <div className="bg-white rounded-xl border border-nearmee-border divide-y divide-nearmee-border overflow-hidden">
-            {SUPPORT_ITEMS.map(({ icon, label, desc }) => (
-              <button key={label} className="flex items-center gap-3 px-4 py-3.5 w-full text-left active:bg-nearmee-surface">
+            {SUPPORT_ITEMS.map(({ icon, label, desc, href }) => (
+              <button key={label} onClick={() => href && router.push(href)}
+                className="flex items-center gap-3 px-4 py-3.5 w-full text-left active:bg-nearmee-surface">
                 <span className="text-xl w-7 text-center shrink-0">{icon}</span>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-nearmee-text">{label}</p>

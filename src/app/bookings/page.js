@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBookings } from '@/lib/hooks/useBookings';
+import { useToast } from '@/components/ui/Toast';
 import { BOOKING_STATUSES, CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ export default function BookingsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { bookings, loading: bookingsLoading, cancelBooking } = useBookings(user?.id);
+  const { show: showToast } = useToast();
   const [activeTab, setActiveTab] = useState('Upcoming');
 
   // Redirect to login if not authenticated
@@ -120,7 +122,10 @@ export default function BookingsPage() {
                   {['pending', 'confirmed'].includes(booking.status) && (
                     <div className="flex gap-2 mt-3">
                       <button
-                        onClick={() => cancelBooking(booking.id)}
+                        onClick={async () => {
+                        const ok = await cancelBooking(booking.id);
+                        showToast(ok ? 'Booking cancelled' : 'Could not cancel booking', ok ? 'success' : 'error');
+                      }}
                         className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50"
                       >
                         Cancel

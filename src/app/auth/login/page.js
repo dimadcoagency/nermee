@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
+
 export default function LoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState('');
@@ -114,9 +115,9 @@ export default function LoginPage() {
 
       <p className="text-xs text-nearmee-text-sec text-center mt-8 leading-relaxed">
         By continuing, you agree to Nearmee's{' '}
-        <span className="text-nearmee-coral font-semibold">Terms of Service</span>{' '}
+        <Link href="/terms" className="text-nearmee-coral font-semibold">Terms of Service</Link>{' '}
         and{' '}
-        <span className="text-nearmee-coral font-semibold">Privacy Policy</span>.
+        <Link href="/privacy" className="text-nearmee-coral font-semibold">Privacy Policy</Link>.
       </p>
     </div>
   );
