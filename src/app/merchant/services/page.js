@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMerchantServices } from '@/lib/hooks/useMerchant';
+import { useToast } from '@/components/ui/Toast';
 import { CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
@@ -14,6 +15,17 @@ export default function MerchantServicesPage() {
   const router = useRouter();
   const { merchant } = useAuth();
   const { services, loading, deleteService, togglePause } = useMerchantServices(merchant?.id);
+  const { show: showToast } = useToast();
+
+  async function handleShareService(serviceId, title) {
+    const url = `https://nearmee.app/services/${serviceId}`;
+    if (navigator.share) {
+      await navigator.share({ title, url, text: `Book ${title} on Nearmee.` });
+    } else {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied!');
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-nearmee-surface">
@@ -69,6 +81,16 @@ export default function MerchantServicesPage() {
                 </div>
 
                 <div className="flex gap-2 mt-3 pt-3 border-t border-nearmee-border">
+                  <button
+                    onClick={() => handleShareService(service.id, service.title)}
+                    className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface flex items-center justify-center gap-1"
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                    Share
+                  </button>
                   <button
                     onClick={() => router.push(`/merchant/services/edit/${service.id}`)}
                     className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90"

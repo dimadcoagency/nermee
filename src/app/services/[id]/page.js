@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useService } from '@/lib/hooks/useServices';
+import { useToast } from '@/components/ui/Toast';
 import { CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
@@ -36,6 +37,19 @@ export default function ServiceDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { service, loading } = useService(id);
+  const { show: showToast } = useToast();
+
+  async function handleShare() {
+    const url = `https://nearmee.app/services/${id}`;
+    const title = service?.title ?? 'Service on Nearmee';
+    const text = `Book ${title} by ${service?.merchant?.business_name} on Nearmee — Services at your doorstep.`;
+    if (navigator.share) {
+      await navigator.share({ title, text, url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied to clipboard!');
+    }
+  }
 
   if (loading) {
     return (
@@ -78,6 +92,12 @@ export default function ServiceDetailPage() {
         {is_boosted && (
           <span className="text-[9px] font-bold bg-nearmee-dark text-white px-1.5 py-0.5 rounded shrink-0">AD</span>
         )}
+        <button onClick={handleShare} className="p-1.5 text-nearmee-text-sec active:text-nearmee-coral shrink-0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+        </button>
       </header>
 
       <main className="flex-1 pb-32">

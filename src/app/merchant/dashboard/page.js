@@ -3,12 +3,24 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMerchantStats } from '@/lib/hooks/useMerchant';
+import { useToast } from '@/components/ui/Toast';
 import { formatPrice } from '@/lib/utils';
 
 export default function MerchantDashboardPage() {
   const router = useRouter();
   const { merchant, profile, loading } = useAuth();
   const stats = useMerchantStats(merchant?.id);
+  const { show: showToast } = useToast();
+
+  async function handleShareProfile() {
+    const url = `https://nearmee.app/m/${merchant?.id}`;
+    if (navigator.share) {
+      await navigator.share({ title: merchant?.business_name, url, text: `Book services from ${merchant?.business_name} on Nearmee.` });
+    } else {
+      await navigator.clipboard.writeText(url);
+      showToast('Profile link copied!');
+    }
+  }
 
   if (loading) {
     return (
@@ -27,6 +39,7 @@ export default function MerchantDashboardPage() {
     { label: 'Post a Service', icon: '➕', href: '/merchant/services/new' },
     { label: 'My Services', icon: '📋', href: '/merchant/services' },
     { label: 'Bookings', icon: '📅', href: '/merchant/bookings' },
+    { label: 'Share My Profile', icon: '🔗', href: null, action: handleShareProfile },
   ];
 
   return (
@@ -89,10 +102,10 @@ export default function MerchantDashboardPage() {
         <div>
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">Quick Actions</p>
           <div className="flex flex-col gap-2">
-            {QUICK_ACTIONS.map(({ label, icon, href }) => (
+            {QUICK_ACTIONS.map(({ label, icon, href, action }) => (
               <button
                 key={label}
-                onClick={() => router.push(href)}
+                onClick={() => action ? action() : router.push(href)}
                 className="flex items-center gap-3 bg-white rounded-xl px-4 py-3.5 border border-nearmee-border active:bg-nearmee-surface w-full text-left"
               >
                 <span className="text-xl w-8 text-center">{icon}</span>
