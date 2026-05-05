@@ -118,7 +118,7 @@ export async function registerMerchant({ userId, businessName, phone, category, 
   return { data, error };
 }
 
-export async function createService({ merchantId, title, description, category, price, priceUnit, availability }) {
+export async function createService({ merchantId, city, title, description, category, price, priceUnit, availability }) {
   const supabase = createClient();
 
   const { data: service, error } = await supabase
@@ -131,7 +131,7 @@ export async function createService({ merchantId, title, description, category, 
       price: Number(price),
       price_unit: priceUnit,
       status: 'active',
-      city: 'Bayawan City',
+      city: city || 'Bayawan City',
     })
     .select()
     .single();

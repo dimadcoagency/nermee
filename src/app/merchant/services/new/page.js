@@ -52,8 +52,14 @@ export default function NewServicePage() {
     if (form.times.length === 0) { setError('Select at least one time slot'); return; }
 
     setLoading(true);
+    // Derive city from merchant's service_area (e.g. "Bayawan City, Poblacion" → "Bayawan City")
+    const city = merchant?.service_area?.toLowerCase().includes('dumaguete')
+      ? 'Dumaguete City'
+      : 'Bayawan City';
+
     const { error: createError } = await createService({
       merchantId: merchant.id,
+      city,
       title: form.title.trim(),
       description: form.description.trim(),
       category: form.category,
