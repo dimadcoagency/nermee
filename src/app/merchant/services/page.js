@@ -92,7 +92,7 @@ export default function MerchantServicesPage() {
                       ? 'bg-nearmee-light text-nearmee-coral'
                       : 'bg-nearmee-surface text-nearmee-text-sec'
                   }`}>
-                    {service.status === 'active' ? '● Published' : '○ Unpublished'}
+                    {service.status === 'active' ? 'Published' : 'Unpublished'}
                   </span>
                 </div>
 
@@ -125,9 +125,9 @@ export default function MerchantServicesPage() {
                     {togglingId === service.id ? (
                       <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : service.status === 'active' ? (
-                      <>● Published</>
+                      'Published'
                     ) : (
-                      <>○ Unpublished</>
+                      'Unpublished'
                     )}
                   </button>
                   <button
