@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 const HIDDEN_ON = ['/auth/login', '/auth/verify', '/auth/setup'];
-const HIDDEN_STARTS_WITH = ['/services/', '/booking/', '/merchant/register', '/merchant/services/new'];
+const HIDDEN_STARTS_WITH = ['/services/', '/booking/', '/merchant/register', '/merchant/services/new', '/merchant/services/edit'];
 
 const CUSTOMER_NAV = [
   {

@@ -70,6 +70,12 @@ export default function MerchantServicesPage() {
 
                 <div className="flex gap-2 mt-3 pt-3 border-t border-nearmee-border">
                   <button
+                    onClick={() => router.push(`/merchant/services/edit/${service.id}`)}
+                    className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90"
+                  >
+                    Edit
+                  </button>
+                  <button
                     onClick={() => togglePause(service.id, service.status)}
                     className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface"
                   >

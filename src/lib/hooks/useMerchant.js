@@ -24,14 +24,26 @@ export function useMerchantServices(merchantId) {
   }, [merchantId]);
 
   async function deleteService(serviceId) {
-    await supabase.from('services').update({ status: 'deleted' }).eq('id', serviceId);
-    setServices((prev) => prev.filter((s) => s.id !== serviceId));
+    const { error } = await supabase
+      .from('services')
+      .update({ status: 'deleted' })
+      .eq('id', serviceId);
+    if (!error) {
+      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+    }
+    return !error;
   }
 
   async function togglePause(serviceId, currentStatus) {
     const next = currentStatus === 'active' ? 'paused' : 'active';
-    await supabase.from('services').update({ status: next }).eq('id', serviceId);
-    setServices((prev) => prev.map((s) => s.id === serviceId ? { ...s, status: next } : s));
+    const { error } = await supabase
+      .from('services')
+      .update({ status: next })
+      .eq('id', serviceId);
+    if (!error) {
+      setServices((prev) => prev.map((s) => s.id === serviceId ? { ...s, status: next } : s));
+    }
+    return !error;
   }
 
   return { services, loading, deleteService, togglePause };
@@ -139,14 +151,14 @@ export async function createService({ merchantId, city, title, description, cate
   if (error || !service) return { error };
 
   // Insert availability slots
-  if (availability.length > 0) {
+  if (availability.days.length > 0 && availability.times.length > 0) {
     const slots = [];
     availability.days.forEach((day) => {
       availability.times.forEach((time) => {
         slots.push({ service_id: service.id, day_of_week: day, time_slot: time, is_available: true });
       });
     });
-    if (slots.length > 0) await supabase.from('availability').insert(slots);
+    await supabase.from('availability').insert(slots);
   }
 
   return { data: service, error: null };
