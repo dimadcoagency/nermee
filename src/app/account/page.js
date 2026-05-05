@@ -193,8 +193,9 @@ export default function AccountPage() {
           </button>
         )}
 
-        <p className="text-center text-[11px] text-nearmee-text-sec pb-2">
-          Nearmee v0.1.0 · Made with ♥ in Bayawan City
+        <p className="text-center text-[11px] text-nearmee-text-sec pb-2 leading-relaxed">
+          Nearmee v5.05.26{'\n'}
+          <span className="block">Powered by MADINNO (Making Dynamic Innovation)</span>
         </p>
       </main>
     </div>
