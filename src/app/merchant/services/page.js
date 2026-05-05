@@ -24,7 +24,7 @@ export default function MerchantServicesPage() {
     const ok = await togglePause(serviceId, currentStatus);
     showToast(
       ok
-        ? currentStatus === 'active' ? 'Service paused' : 'Service activated'
+        ? currentStatus === 'active' ? 'Service unpublished' : 'Service published — now visible to customers!'
         : 'Could not update service — check your connection',
       ok ? 'success' : 'error'
     );
@@ -88,9 +88,11 @@ export default function MerchantServicesPage() {
                     </p>
                   </div>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                    service.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-nearmee-surface text-nearmee-text-sec'
+                    service.status === 'active'
+                      ? 'bg-nearmee-light text-nearmee-coral'
+                      : 'bg-nearmee-surface text-nearmee-text-sec'
                   }`}>
-                    {service.status === 'active' ? 'Active' : 'Paused'}
+                    {service.status === 'active' ? '● Published' : '○ Unpublished'}
                   </span>
                 </div>
 
@@ -114,11 +116,19 @@ export default function MerchantServicesPage() {
                   <button
                     onClick={() => handleTogglePause(service.id, service.status)}
                     disabled={togglingId === service.id}
-                    className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface disabled:opacity-50"
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5 ${
+                      service.status === 'active'
+                        ? 'bg-nearmee-coral text-white'
+                        : 'border border-nearmee-border text-nearmee-text-sec bg-white'
+                    }`}
                   >
-                    {togglingId === service.id
-                      ? '...'
-                      : service.status === 'active' ? 'Pause' : 'Activate'}
+                    {togglingId === service.id ? (
+                      <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : service.status === 'active' ? (
+                      <>● Published</>
+                    ) : (
+                      <>○ Unpublished</>
+                    )}
                   </button>
                   <button
                     onClick={() => deleteService(service.id)}
