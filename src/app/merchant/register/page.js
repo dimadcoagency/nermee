@@ -98,9 +98,18 @@ export default function MerchantRegisterPage() {
       </header>
 
       <main className="flex-1 px-4 py-6 flex flex-col gap-5">
+
         {/* Step 0 — Business Info */}
         {step === 0 && (
           <>
+            {/* Guide box */}
+            <div className="bg-nearmee-light rounded-xl p-4">
+              <p className="text-xs font-bold text-nearmee-coral mb-1">🏪 Your Business Profile</p>
+              <p className="text-xs text-nearmee-text-sec leading-relaxed">
+                This is your <span className="font-semibold text-nearmee-text">brand identity</span> — what customers see when they find you. You only register once. Think of it like your business signage.
+              </p>
+            </div>
+
             <div>
               <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">Business Name *</label>
               <input
@@ -111,6 +120,12 @@ export default function MerchantRegisterPage() {
                 autoCapitalize="words"
                 className={inputClass(false)}
               />
+              <div className="mt-2 bg-nearmee-surface rounded-lg px-3 py-2">
+                <p className="text-[11px] font-semibold text-nearmee-text-sec mb-1">💡 Good examples:</p>
+                <p className="text-[11px] text-nearmee-text-sec">• <span className="text-nearmee-text">Ate Leny's Lutong Bahay</span> — meals</p>
+                <p className="text-[11px] text-nearmee-text-sec">• <span className="text-nearmee-text">JD Pasuyo Services</span> — errands</p>
+                <p className="text-[11px] text-nearmee-text-sec">• <span className="text-nearmee-text">SparkleClean Bayawan</span> — cleaning</p>
+              </div>
             </div>
 
             <div>
@@ -122,10 +137,12 @@ export default function MerchantRegisterPage() {
                 placeholder="09XXXXXXXXX"
                 className={inputClass(false)}
               />
+              <p className="text-xs text-nearmee-text-sec mt-1">Customers will call or message you on this number after booking.</p>
             </div>
 
             <div>
               <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">Primary Category *</label>
+              <p className="text-xs text-nearmee-text-sec mb-2">Choose your main type of service. You can add services from other categories later.</p>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -149,6 +166,13 @@ export default function MerchantRegisterPage() {
         {/* Step 1 — Service Area */}
         {step === 1 && (
           <>
+            <div className="bg-nearmee-light rounded-xl p-4">
+              <p className="text-xs font-bold text-nearmee-coral mb-1">📍 Where You Operate</p>
+              <p className="text-xs text-nearmee-text-sec leading-relaxed">
+                Customers search by location — be specific so the right customers in your area can find you.
+              </p>
+            </div>
+
             <div>
               <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">City *</label>
               <div className="flex gap-3">
@@ -174,23 +198,27 @@ export default function MerchantRegisterPage() {
                 type="text"
                 value={form.serviceArea}
                 onChange={(e) => set('serviceArea', e.target.value)}
-                placeholder="e.g. Poblacion, Ubos, Proper"
+                placeholder="e.g. Poblacion, Ubos, Timbao, Proper"
                 className={inputClass(false)}
               />
-              <p className="text-xs text-nearmee-text-sec mt-1">Where do you offer your services?</p>
+              <div className="mt-2 bg-nearmee-surface rounded-lg px-3 py-2">
+                <p className="text-[11px] font-semibold text-nearmee-text-sec mb-0.5">💡 Be specific:</p>
+                <p className="text-[11px] text-nearmee-text-sec">Enter the barangay or area you serve most. If you cover the whole city, write <span className="font-semibold text-nearmee-text">Bayawan City, All Areas</span>.</p>
+              </div>
             </div>
 
             <div>
               <label className="text-xs font-bold text-nearmee-text-sec uppercase tracking-wider mb-1.5 block">
-                About Your Business <span className="font-normal normal-case">(optional)</span>
+                About Your Business <span className="font-normal normal-case">(optional but recommended)</span>
               </label>
               <textarea
                 value={form.bio}
                 onChange={(e) => set('bio', e.target.value)}
-                placeholder="Tell customers about your experience and what makes you the best..."
+                placeholder="e.g. Licensed plumber with 10 years experience. Available for emergency calls. Tools and materials included."
                 rows={4}
                 className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral resize-none"
               />
+              <p className="text-xs text-nearmee-text-sec mt-1">Merchants with a bio get 3x more bookings. Mention your experience, certifications, and what makes you reliable.</p>
             </div>
           </>
         )}

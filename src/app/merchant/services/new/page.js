@@ -92,6 +92,22 @@ export default function NewServicePage() {
       </header>
 
       <main className="flex-1 pb-32 divide-y divide-nearmee-border">
+        {/* Guide box */}
+        <section className="px-4 py-4">
+          <div className="bg-nearmee-light rounded-xl p-4">
+            <p className="text-xs font-bold text-nearmee-coral mb-1">📋 What is a Service?</p>
+            <p className="text-xs text-nearmee-text-sec leading-relaxed mb-2">
+              A service is a <span className="font-semibold text-nearmee-text">specific task</span> you offer at a specific price. One merchant can have multiple services. Think of it as your menu item.
+            </p>
+            <p className="text-xs font-semibold text-nearmee-text mb-1">✅ Good service names:</p>
+            <p className="text-xs text-nearmee-text-sec">• Pipe Repair & Leak Fixing</p>
+            <p className="text-xs text-nearmee-text-sec">• Home-cooked Lunch Box Delivery</p>
+            <p className="text-xs text-nearmee-text-sec">• Grocery Errand – SM & Savemore</p>
+            <p className="text-xs text-nearmee-text-sec">• House Deep Cleaning (2–3 BR)</p>
+            <p className="text-xs text-nearmee-text-sec mt-1 font-semibold text-red-400">❌ Too vague: "Plumbing" · "My Service" · "Available"</p>
+          </div>
+        </section>
+
         {/* Basic info */}
         <section className="px-4 py-5 flex flex-col gap-4">
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest">Service Details</p>
@@ -100,10 +116,12 @@ export default function NewServicePage() {
             <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">Service Title *</label>
             <input type="text" value={form.title} onChange={(e) => set('title', e.target.value)}
               placeholder="e.g. Plumbing Repair & Pipe Fixing" className={inputClass} autoCapitalize="words" />
+            <p className="text-xs text-nearmee-text-sec mt-1">Format: <span className="font-semibold text-nearmee-text">[Action] + [Specific Task]</span></p>
           </div>
 
           <div>
             <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">Category *</label>
+            <p className="text-xs text-nearmee-text-sec mb-2">Choose the category that best matches this specific service.</p>
             <div className="grid grid-cols-2 gap-2">
               {CATEGORIES.map((cat) => (
                 <button key={cat.id} onClick={() => set('category', cat.id)}
@@ -140,16 +158,26 @@ export default function NewServicePage() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">Description <span className="font-normal">(optional)</span></label>
+            <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">Description <span className="font-normal">(optional but recommended)</span></label>
             <textarea value={form.description} onChange={(e) => set('description', e.target.value)}
-              placeholder="Describe your service, what's included, requirements..."
-              rows={3} className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral resize-none" />
+              placeholder="e.g. Includes labor. Leaky pipes, faucet replacement, drain unclogging. Tools included. Materials charged separately. Available for emergency calls."
+              rows={4} className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral resize-none" />
+            <div className="mt-2 bg-nearmee-surface rounded-lg px-3 py-2">
+              <p className="text-[11px] font-semibold text-nearmee-text-sec mb-0.5">💡 What to include:</p>
+              <p className="text-[11px] text-nearmee-text-sec">• What's included in the price</p>
+              <p className="text-[11px] text-nearmee-text-sec">• Any requirements from the customer</p>
+              <p className="text-[11px] text-nearmee-text-sec">• Minimum order or conditions</p>
+              <p className="text-[11px] text-nearmee-text-sec">• Special notes (e.g. materials not included)</p>
+            </div>
           </div>
         </section>
 
         {/* Availability */}
         <section className="px-4 py-5 flex flex-col gap-4">
-          <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest">Availability</p>
+          <div>
+            <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-1">Availability</p>
+            <p className="text-xs text-nearmee-text-sec">Set the days and times customers can book this service. You can change this anytime.</p>
+          </div>
 
           <div>
             <p className="text-xs font-semibold text-nearmee-text-sec mb-2">Available Days</p>
