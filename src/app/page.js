@@ -146,6 +146,14 @@ export default function HomePage() {
         </button>
       </header>
 
+      {/* ── Beta banner ─────────────────────────────── */}
+      <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center gap-2">
+        <span className="text-amber-500 text-xs shrink-0">🚀</span>
+        <p className="text-xs text-amber-700 font-medium">
+          Nearmee is currently in beta. <span className="font-bold">Free for all merchants and customers.</span>
+        </p>
+      </div>
+
       {/* ── City toggle ─────────────────────────────── */}
       <div className="flex gap-2 px-4 pt-3">
         {CITIES.map((city) => (
