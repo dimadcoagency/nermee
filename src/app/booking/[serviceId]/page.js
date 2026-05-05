@@ -254,6 +254,16 @@ export default function BookingPage() {
             Payment is made directly to the provider (cash or GCash).
           </p>
 
+          {/* Errands location note */}
+          {isErrands && (
+            <div className="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
+              <p className="text-xs font-bold text-blue-700 mb-1">📍 Location-Based Pricing</p>
+              <p className="text-xs text-blue-600 leading-relaxed">
+                Final price depends on your location and distance from the merchant. Message the merchant first to confirm the total before they start your errand.
+              </p>
+            </div>
+          )}
+
           {/* Cancellation policy warning */}
           <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p className="text-xs font-bold text-amber-700 mb-1">⚠️ Cancellation Policy</p>
