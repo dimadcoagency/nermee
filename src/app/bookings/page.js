@@ -10,6 +10,42 @@ import { formatPrice } from '@/lib/utils';
 
 const TABS = ['Upcoming', 'Completed', 'Cancelled'];
 
+function CancelConfirmDialog({ booking, onConfirm, onDismiss }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-4 pb-8">
+      <div className="absolute inset-0 bg-black/40" onClick={onDismiss} />
+      <div className="relative bg-white rounded-2xl w-full max-w-app p-5 shadow-xl">
+        <h3 className="text-base font-extrabold text-nearmee-text mb-2">Cancel Booking?</h3>
+        <p className="text-sm text-nearmee-text-sec mb-1">
+          <span className="font-semibold text-nearmee-text">{booking?.service?.title}</span>
+        </p>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 my-4">
+          <p className="text-xs font-bold text-amber-700 mb-1">⚠️ Please note</p>
+          <p className="text-xs text-amber-600 leading-relaxed">
+            The merchant has reserved time for this booking. Frequent cancellations may result in account restrictions on Nearmee. Only cancel if absolutely necessary.
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onDismiss}
+            className="flex-1 py-3 rounded-xl border border-nearmee-border text-nearmee-text text-sm font-semibold active:bg-nearmee-surface"
+          >
+            Keep Booking
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm font-bold active:opacity-90"
+          >
+            Yes, Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function getCategoryIcon(categoryId) {
   return CATEGORIES.find((c) => c.id === categoryId)?.icon ?? '🛠️';
 }
@@ -31,6 +67,7 @@ export default function BookingsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { bookings, loading: bookingsLoading, cancelBooking } = useBookings(user?.id);
+  const [cancelTarget, setCancelTarget] = useState(null);
   const { show: showToast } = useToast();
   const [activeTab, setActiveTab] = useState('Upcoming');
 
@@ -122,10 +159,7 @@ export default function BookingsPage() {
                   {['pending', 'confirmed'].includes(booking.status) && (
                     <div className="flex gap-2 mt-3">
                       <button
-                        onClick={async () => {
-                          const ok = await cancelBooking(booking.id);
-                          showToast(ok ? 'Booking cancelled' : 'Could not cancel booking', ok ? 'success' : 'error');
-                        }}
+                        onClick={() => setCancelTarget(booking)}
                         className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50"
                       >
                         Cancel
@@ -160,6 +194,19 @@ export default function BookingsPage() {
           </div>
         )}
       </main>
+
+      {/* Cancel confirmation dialog */}
+      {cancelTarget && (
+        <CancelConfirmDialog
+          booking={cancelTarget}
+          onDismiss={() => setCancelTarget(null)}
+          onConfirm={async () => {
+            const ok = await cancelBooking(cancelTarget.id);
+            setCancelTarget(null);
+            showToast(ok ? 'Booking cancelled' : 'Could not cancel', ok ? 'success' : 'error');
+          }}
+        />
+      )}
     </div>
   );
 }

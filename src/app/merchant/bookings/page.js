@@ -10,6 +10,31 @@ import { formatPrice } from '@/lib/utils';
 
 const TABS = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
 
+function isPastBooking(dateStr, timeStr) {
+  const bookingDate = new Date(dateStr + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return bookingDate < today;
+}
+
+function CustomerBadge({ noShows, cancellations }) {
+  if (noShows === 0 && cancellations === 0) return null;
+  return (
+    <div className="flex gap-2 mt-2">
+      {noShows > 0 && (
+        <span className="text-[10px] font-bold bg-red-50 text-red-500 px-2 py-0.5 rounded-full">
+          {noShows} no-show{noShows > 1 ? 's' : ''}
+        </span>
+      )}
+      {cancellations > 0 && (
+        <span className="text-[10px] font-bold bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
+          {cancellations} cancellation{cancellations > 1 ? 's' : ''}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function getCategoryIcon(id) {
   return CATEGORIES.find((c) => c.id === id)?.icon ?? '🛠️';
 }
@@ -84,10 +109,14 @@ export default function MerchantBookingsPage() {
                     </span>
                   </div>
 
-                  {/* Customer info */}
+                  {/* Customer info + reliability badge */}
                   <div className="bg-nearmee-surface rounded-lg px-3 py-2.5 mb-3">
                     <p className="text-xs font-bold text-nearmee-text">{booking.customer?.full_name || 'Customer'}</p>
                     <p className="text-xs text-nearmee-text-sec mt-0.5">{booking.customer?.phone || ''}</p>
+                    <CustomerBadge
+                      noShows={bookings.filter((b) => b.customer?.id === booking.customer?.id && b.status === 'no_show').length}
+                      cancellations={bookings.filter((b) => b.customer?.id === booking.customer?.id && b.status === 'cancelled').length}
+                    />
                   </div>
 
                   {/* Date + time */}
@@ -120,20 +149,33 @@ export default function MerchantBookingsPage() {
                     </div>
                   )}
                   {booking.status === 'confirmed' && (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => router.push(`/messages/${booking.id}`)}
-                        className="flex-1 py-2.5 rounded-xl border border-nearmee-coral text-nearmee-coral text-xs font-bold active:bg-nearmee-light flex items-center justify-center gap-1"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF5757" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        Message
-                      </button>
-                      <button
-                        onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
-                        className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
-                      >
-                        Completed
-                      </button>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => router.push(`/messages/${booking.id}`)}
+                          className="flex-1 py-2.5 rounded-xl border border-nearmee-coral text-nearmee-coral text-xs font-bold active:bg-nearmee-light flex items-center justify-center gap-1"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF5757" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                          Message
+                        </button>
+                        <button
+                          onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
+                          className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
+                        >
+                          Completed
+                        </button>
+                      </div>
+                      {isPastBooking(booking.booking_date) && (
+                        <button
+                          onClick={async () => {
+                            await updateStatus(booking.id, 'no_show');
+                            showToast('Marked as no-show. Customer has been flagged.', 'warning');
+                          }}
+                          className="w-full py-2.5 rounded-xl border border-red-200 text-red-500 text-xs font-bold active:bg-red-50"
+                        >
+                          😔 Customer No-Show
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

@@ -253,6 +253,14 @@ export default function BookingPage() {
           <p className="text-xs text-nearmee-text-sec mt-2 text-center">
             Payment is made directly to the provider (cash or GCash).
           </p>
+
+          {/* Cancellation policy warning */}
+          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p className="text-xs font-bold text-amber-700 mb-1">⚠️ Cancellation Policy</p>
+            <p className="text-xs text-amber-600 leading-relaxed">
+              Only book if you can commit. Frequent cancellations or no-shows may result in account restrictions. The merchant is reserving time specifically for you.
+            </p>
+          </div>
           {error && <p className="text-xs text-red-500 text-center mt-2">{error}</p>}
         </section>
       </main>
