@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUnreadCount } from '@/lib/hooks/useMessages';
 
 const HIDDEN_ON = ['/auth/login', '/auth/verify', '/auth/setup'];
-const HIDDEN_STARTS_WITH = ['/services/', '/booking/', '/merchant/register', '/merchant/services/new', '/merchant/services/edit'];
+const HIDDEN_STARTS_WITH = ['/services/', '/booking/', '/merchant/register', '/merchant/services/new', '/merchant/services/edit', '/messages/'];
 
 const CUSTOMER_NAV = [
   {
@@ -51,7 +52,8 @@ const MERCHANT_NAV = [
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { user, loading, merchantMode } = useAuth();
+  const { user, loading, merchant, merchantMode } = useAuth();
+  const unreadCount = useUnreadCount(user?.id, merchant?.id);
 
   if (HIDDEN_ON.includes(pathname)) return null;
   if (HIDDEN_STARTS_WITH.some((p) => pathname.startsWith(p))) return null;
@@ -69,10 +71,20 @@ export default function BottomNav() {
       <div className="flex justify-around py-1">
         {items.map(({ href, label, icon }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+          const showBadge = label === 'Messages' && unreadCount > 0;
           return (
             <Link key={href} href={href}
               className={`flex flex-col items-center gap-0.5 px-2 py-1.5 min-w-0 flex-1 transition-colors ${active ? 'text-nearmee-coral' : 'text-nearmee-text-sec'}`}>
-              {icon(active)}
+              <div className="relative">
+                {icon(active)}
+                {showBadge && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-nearmee-coral rounded-full flex items-center justify-center">
+                    <span className="text-[9px] font-bold text-white leading-none">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  </span>
+                )}
+              </div>
               <span className={`text-[9px] font-semibold leading-tight ${active ? 'text-nearmee-coral' : 'text-nearmee-text-sec'}`}>
                 {label}
               </span>

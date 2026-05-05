@@ -10,6 +10,74 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 
+const EMPTY_ITEM = { item: '', qty: '1', store: '', budget: '' };
+
+function ErrandsOrderForm({ items, onChange }) {
+  function update(index, field, value) {
+    const next = items.map((it, i) => i === index ? { ...it, [field]: value } : it);
+    onChange(next);
+  }
+  function add() { onChange([...items, { ...EMPTY_ITEM }]); }
+  function remove(index) { onChange(items.filter((_, i) => i !== index)); }
+
+  return (
+    <section className="px-4 py-4 border-b border-nearmee-border">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest">Errand Items</p>
+        <button onClick={add} className="text-xs font-bold text-nearmee-coral flex items-center gap-1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF5757" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add Item
+        </button>
+      </div>
+      <div className="flex flex-col gap-3">
+        {items.map((it, i) => (
+          <div key={i} className="bg-nearmee-surface rounded-xl p-3 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="text" value={it.item}
+                onChange={(e) => update(i, 'item', e.target.value)}
+                placeholder={`Item ${i + 1} (e.g. Rice, Milk)`}
+                className="flex-1 bg-white border border-nearmee-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-nearmee-coral"
+              />
+              {items.length > 1 && (
+                <button onClick={() => remove(i)} className="text-red-400 shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text" value={it.qty}
+                onChange={(e) => update(i, 'qty', e.target.value)}
+                placeholder="Qty"
+                className="w-16 bg-white border border-nearmee-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-nearmee-coral"
+              />
+              <input
+                type="text" value={it.store}
+                onChange={(e) => update(i, 'store', e.target.value)}
+                placeholder="Store (optional)"
+                className="flex-1 bg-white border border-nearmee-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-nearmee-coral"
+              />
+              <div className="flex items-center bg-white border border-nearmee-border rounded-lg px-2 py-2 w-24">
+                <span className="text-xs text-nearmee-text-sec mr-0.5">₱</span>
+                <input
+                  type="number" value={it.budget}
+                  onChange={(e) => update(i, 'budget', e.target.value)}
+                  placeholder="Max"
+                  className="w-full text-sm outline-none bg-transparent"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-nearmee-text-sec mt-2">
+        📦 This list will be sent to your errand provider with your booking.
+      </p>
+    </section>
+  );
+}
+
 function getCategoryIcon(categoryId) {
   return CATEGORIES.find((c) => c.id === categoryId)?.icon ?? '🛠️';
 }
@@ -24,8 +92,11 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTime, setSelectedTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [errandItems, setErrandItems] = useState([{ ...EMPTY_ITEM }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isErrands = service?.category === 'errands';
 
   if (serviceLoading) {
     return (
@@ -56,13 +127,25 @@ export default function BookingPage() {
     setLoading(true);
     setError('');
 
+    // Format errand items into notes if applicable
+    let finalNotes = notes;
+    if (isErrands) {
+      const filled = errandItems.filter((it) => it.item.trim());
+      if (filled.length > 0) {
+        const itemLines = filled.map((it, i) =>
+          `${i + 1}. ${it.item} (x${it.qty || 1})${it.store ? ' — ' + it.store : ''}${it.budget ? ' — ₱' + it.budget + ' max' : ''}`
+        ).join('\n');
+        finalNotes = `ERRAND ITEMS:\n${itemLines}${notes ? '\n\nNotes: ' + notes : ''}`;
+      }
+    }
+
     const { data, error: bookingError } = await createBooking({
       customerId: user.id,
       merchantId: service.merchant.id,
       serviceId: service.id,
       date: selectedDate,
       time: selectedTime,
-      notes,
+      notes: finalNotes,
       price: service.price,
     });
 
@@ -125,6 +208,11 @@ export default function BookingPage() {
           <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest mb-3">Select Time</p>
           <TimePicker slots={timeSlots} selected={selectedTime} onSelect={setSelectedTime} />
         </section>
+
+        {/* Errands order form — only for errands category */}
+        {isErrands && (
+          <ErrandsOrderForm items={errandItems} onChange={setErrandItems} />
+        )}
 
         {/* Notes */}
         <section className="px-4 py-4 border-b border-nearmee-border">

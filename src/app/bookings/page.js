@@ -123,16 +123,22 @@ export default function BookingsPage() {
                     <div className="flex gap-2 mt-3">
                       <button
                         onClick={async () => {
-                        const ok = await cancelBooking(booking.id);
-                        showToast(ok ? 'Booking cancelled' : 'Could not cancel booking', ok ? 'success' : 'error');
-                      }}
+                          const ok = await cancelBooking(booking.id);
+                          showToast(ok ? 'Booking cancelled' : 'Could not cancel booking', ok ? 'success' : 'error');
+                        }}
                         className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-xs font-semibold active:bg-red-50"
                       >
                         Cancel
                       </button>
-                      <button className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90">
-                        View Details
-                      </button>
+                      {booking.status === 'confirmed' && (
+                        <button
+                          onClick={() => router.push(`/messages/${booking.id}`)}
+                          className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90 flex items-center justify-center gap-1"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                          Message
+                        </button>
+                      )}
                     </div>
                   )}
                   {booking.status === 'completed' && (

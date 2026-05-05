@@ -118,12 +118,21 @@ export default function MerchantBookingsPage() {
                     </div>
                   )}
                   {booking.status === 'confirmed' && (
-                    <button
-                      onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
-                      className="w-full py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
-                    >
-                      Mark as Completed
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => router.push(`/messages/${booking.id}`)}
+                        className="flex-1 py-2.5 rounded-xl border border-nearmee-coral text-nearmee-coral text-xs font-bold active:bg-nearmee-light flex items-center justify-center gap-1"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF5757" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Message
+                      </button>
+                      <button
+                        onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
+                        className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
+                      >
+                        Completed
+                      </button>
+                    </div>
                   )}
                 </div>
               );
