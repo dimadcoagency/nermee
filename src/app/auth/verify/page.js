@@ -90,8 +90,15 @@ export default function VerifyPage() {
 
     setLoading(false);
 
+    const redirect = localStorage.getItem('nearmee_redirect');
+
     if (profile?.full_name) {
-      router.replace('/');
+      if (redirect) {
+        localStorage.removeItem('nearmee_redirect');
+        router.replace(redirect);
+      } else {
+        router.replace('/');
+      }
     } else {
       router.replace('/auth/setup');
     }

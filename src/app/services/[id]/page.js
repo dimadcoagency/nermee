@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useService } from '@/lib/hooks/useServices';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
@@ -38,6 +39,16 @@ export default function ServiceDetailPage() {
   const router = useRouter();
   const { service, loading } = useService(id);
   const { show: showToast } = useToast();
+  const { user } = useAuth();
+
+  function handleBookNow() {
+    if (!user) {
+      localStorage.setItem('nearmee_redirect', `/booking/${id}`);
+      router.push('/auth/login');
+      return;
+    }
+    router.push(`/booking/${id}`);
+  }
 
   async function handleShare() {
     const url = `https://nearmee.app/services/${id}`;
@@ -198,7 +209,7 @@ export default function ServiceDetailPage() {
             </div>
           </div>
           <button
-            onClick={() => router.push(`/booking/${service.id}`)}
+            onClick={handleBookNow}
             className="bg-nearmee-coral text-white px-8 py-3.5 rounded-xl text-sm font-bold active:opacity-90"
           >
             Book Now

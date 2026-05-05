@@ -55,7 +55,14 @@ export default function ProfileSetupPage() {
 
     await refreshProfile();
     setLoading(false);
-    router.replace('/');
+
+    const redirect = localStorage.getItem('nearmee_redirect');
+    if (redirect) {
+      localStorage.removeItem('nearmee_redirect');
+      router.replace(redirect);
+    } else {
+      router.replace('/');
+    }
   }
 
   return (
