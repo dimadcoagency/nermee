@@ -17,41 +17,51 @@ function LandingPage() {
   return (
     <div className="relative flex flex-col min-h-screen bg-white overflow-hidden">
 
-      {/* Top-right coral blob */}
-      <div
-        className="absolute -top-24 -right-24 w-72 h-72 rounded-full"
-        style={{ background: '#FFB3B3', opacity: 0.6 }}
+      {/* Top-right pink blob */}
+      <div className="absolute rounded-full"
+        style={{
+          width: '320px', height: '320px',
+          top: '-100px', right: '-80px',
+          background: '#FFB3B3', opacity: 0.55,
+        }}
       />
 
-      {/* Bottom-right coral blob */}
-      <div
-        className="absolute -bottom-20 -right-16 w-64 h-64 rounded-full"
-        style={{ background: '#FF5757', opacity: 0.85 }}
+      {/* Bottom-right coral blob — large, sits behind buttons */}
+      <div className="absolute rounded-full"
+        style={{
+          width: '340px', height: '340px',
+          bottom: '-120px', right: '-60px',
+          background: '#FF5757',
+        }}
       />
 
-      {/* Center content */}
-      <div className="relative flex flex-col items-center justify-center flex-1 px-8 z-10">
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/logo.png"
-            alt="Nearmee"
-            style={{ height: '52px', width: 'auto', display: 'block' }}
-          />
-        </div>
+      {/* Center — icon + brand */}
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-8">
+        {/* Meerkat map pin icon */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/icons/icon-512.png"
+          alt="Nearmee"
+          style={{ width: '90px', height: '90px', objectFit: 'contain', marginBottom: '16px' }}
+        />
+
+        {/* Brand name */}
+        <h1 className="text-4xl font-extrabold text-nearmee-coral tracking-tight">
+          Nearmee
+        </h1>
 
         {/* Tagline */}
-        <p className="text-sm text-nearmee-text-sec text-center -mt-8 mb-16">
+        <p className="text-sm text-nearmee-text-sec mt-2">
           Services at your doorstep.
         </p>
       </div>
 
-      {/* Buttons */}
-      <div className="relative z-10 px-8 pb-16 flex flex-col gap-4">
+      {/* Buttons — above the coral blob */}
+      <div className="relative z-10 px-8 pb-20 flex flex-col gap-3">
         <button
           onClick={() => router.push('/auth/login')}
-          className="w-full py-4 rounded-2xl bg-nearmee-coral text-white text-base font-bold active:opacity-90 transition-opacity"
+          className="w-full py-4 rounded-2xl text-white text-base font-bold active:opacity-90 transition-opacity"
+          style={{ background: '#FF8A8A' }}
         >
           Log In
         </button>
