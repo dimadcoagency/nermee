@@ -524,14 +524,19 @@ CREATE POLICY "Users can view their own reports" ON reports FOR SELECT USING (re
 // src/lib/constants.js
 
 export const CATEGORIES = [
-  { id: 'ride', label: 'Rides', icon: '🚗' },
-  { id: 'plumbing', label: 'Plumbing', icon: '🔧' },
-  { id: 'meals', label: 'Meals', icon: '🍱' },
-  { id: 'cleaning', label: 'Cleaning', icon: '🧹' },
-  { id: 'electrical', label: 'Electrical', icon: '⚡' },
-  { id: 'laundry', label: 'Laundry', icon: '👕' },
-  { id: 'tutoring', label: 'Tutoring', icon: '📚' },
-  { id: 'errands', label: 'Errands', icon: '📦' },
+  { id: 'ride',       label: 'Rides',            icon: '🚗' },
+  { id: 'plumbing',   label: 'Plumbing',         icon: '🔧' },
+  { id: 'meals',      label: 'Meals',            icon: '🍱' },
+  { id: 'cleaning',   label: 'Cleaning',         icon: '🧹' },
+  { id: 'electrical', label: 'Electrical',       icon: '⚡' },
+  { id: 'laundry',    label: 'Laundry',          icon: '👕' },
+  { id: 'tutoring',   label: 'Tutoring',         icon: '📚' },
+  { id: 'errands',    label: 'Errands',          icon: '📦' },
+  { id: 'aircon',     label: 'Aircon',           icon: '🌬️' },
+  { id: 'carpentry',  label: 'Carpentry',        icon: '🔨' },
+  { id: 'appliance',  label: 'Appliance Repair', icon: '🛠️' },
+  { id: 'massage',    label: 'Massage/Hilot',    icon: '💆' },
+  { id: 'beauty',     label: 'Beauty',           icon: '💇' },
 ];
 
 export const CITIES = [
