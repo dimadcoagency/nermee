@@ -45,3 +45,6 @@ CREATE POLICY "Recipients can mark messages read" ON messages FOR UPDATE USING (
     OR merchant_id IN (SELECT id FROM merchants WHERE user_id = auth.uid())
   )
 );
+
+-- Enable Supabase Realtime for messages table
+ALTER PUBLICATION supabase_realtime ADD TABLE messages;

@@ -7,6 +7,8 @@ export function useChat(bookingId, userId) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  // Track real IDs to avoid duplicates from optimistic + realtime
+  const sentIds = useRef(new Set());
 
   useEffect(() => {
     if (!bookingId || !userId) return;
@@ -32,7 +34,8 @@ export function useChat(bookingId, userId) {
 
     init();
 
-    // Real-time subscription
+    // Real-time subscription — only add messages from the OTHER person
+    // (sender's own messages are added optimistically in sendMessage)
     const channel = supabase
       .channel(`chat:${bookingId}`)
       .on('postgres_changes', {
@@ -41,21 +44,26 @@ export function useChat(bookingId, userId) {
         table: 'messages',
         filter: `booking_id=eq.${bookingId}`,
       }, async (payload) => {
-        // Fetch sender name for new message
-        const { data: sender } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', payload.new.sender_id)
-          .single();
+        const msg = payload.new;
 
-        setMessages((prev) => [...prev, { ...payload.new, sender }]);
+        // Skip if we already added this message optimistically
+        if (sentIds.current.has(msg.id)) {
+          sentIds.current.delete(msg.id);
+          return;
+        }
 
-        // Auto-mark as read if it's from the other person
-        if (payload.new.sender_id !== userId) {
-          await supabase
-            .from('messages')
-            .update({ is_read: true })
-            .eq('id', payload.new.id);
+        // Only add messages from the other person via realtime
+        if (msg.sender_id !== userId) {
+          const { data: sender } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', msg.sender_id)
+            .single();
+
+          setMessages((prev) => [...prev, { ...msg, sender }]);
+
+          // Auto-mark as read
+          await supabase.from('messages').update({ is_read: true }).eq('id', msg.id);
         }
       })
       .subscribe();
@@ -65,12 +73,36 @@ export function useChat(bookingId, userId) {
 
   async function sendMessage(content) {
     if (!content.trim()) return false;
-    const { error } = await supabase.from('messages').insert({
+
+    // Optimistic update — message appears instantly
+    const tempId = `temp-${Date.now()}`;
+    const optimistic = {
+      id: tempId,
       booking_id: bookingId,
       sender_id: userId,
       content: content.trim(),
-    });
-    return !error;
+      is_read: false,
+      created_at: new Date().toISOString(),
+      sender: null,
+    };
+    setMessages((prev) => [...prev, optimistic]);
+
+    const { data, error } = await supabase
+      .from('messages')
+      .insert({ booking_id: bookingId, sender_id: userId, content: content.trim() })
+      .select()
+      .single();
+
+    if (error) {
+      // Remove optimistic message on failure
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      return false;
+    }
+
+    // Replace temp with real message and track its ID
+    sentIds.current.add(data.id);
+    setMessages((prev) => prev.map((m) => m.id === tempId ? { ...data, sender: null } : m));
+    return true;
   }
 
   return { messages, loading, sendMessage };

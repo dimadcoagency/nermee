@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMerchantBookings } from '@/lib/hooks/useMerchant';
 import { useToast } from '@/components/ui/Toast';
@@ -21,6 +22,7 @@ function formatDate(dateStr) {
 }
 
 export default function MerchantBookingsPage() {
+  const router = useRouter();
   const { merchant } = useAuth();
   const { bookings, loading, updateStatus } = useMerchantBookings(merchant?.id);
   const { show: showToast } = useToast();
