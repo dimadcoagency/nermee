@@ -40,7 +40,7 @@ function LandingPage() {
         {/* Meerkat map pin icon */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/No bg icon-513.png"
+          src="/icons/Nobg-icon-513.png"
           alt="Nearmee"
           style={{ width: '90px', height: '90px', objectFit: 'contain', marginBottom: '16px' }}
         />
