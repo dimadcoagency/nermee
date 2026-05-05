@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMerchantServices } from '@/lib/hooks/useMerchant';
@@ -16,6 +17,19 @@ export default function MerchantServicesPage() {
   const { merchant } = useAuth();
   const { services, loading, deleteService, togglePause } = useMerchantServices(merchant?.id);
   const { show: showToast } = useToast();
+  const [togglingId, setTogglingId] = useState(null);
+
+  async function handleTogglePause(serviceId, currentStatus) {
+    setTogglingId(serviceId);
+    const ok = await togglePause(serviceId, currentStatus);
+    showToast(
+      ok
+        ? currentStatus === 'active' ? 'Service paused' : 'Service activated'
+        : 'Could not update service — check your connection',
+      ok ? 'success' : 'error'
+    );
+    setTogglingId(null);
+  }
 
   async function handleShareService(serviceId, title) {
     const url = `https://nearmee.app/services/${serviceId}`;
@@ -98,10 +112,13 @@ export default function MerchantServicesPage() {
                     Edit
                   </button>
                   <button
-                    onClick={() => togglePause(service.id, service.status)}
-                    className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface"
+                    onClick={() => handleTogglePause(service.id, service.status)}
+                    disabled={togglingId === service.id}
+                    className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface disabled:opacity-50"
                   >
-                    {service.status === 'active' ? 'Pause' : 'Activate'}
+                    {togglingId === service.id
+                      ? '...'
+                      : service.status === 'active' ? 'Pause' : 'Activate'}
                   </button>
                   <button
                     onClick={() => deleteService(service.id)}
