@@ -76,7 +76,7 @@ export default function HomePage() {
   const cityLabel = CITIES.find((c) => c.id === selectedCity)?.label ?? '';
   const cityName = selectedCity === 'bayawan' ? 'Bayawan City' : 'Dumaguete City';
 
-  const { services, loading: servicesLoading } = useServices({
+  const { services, loading: feedLoading } = useServices({
     city: cityName,
     category: selectedCategory,
   });
@@ -126,7 +126,7 @@ export default function HomePage() {
             </svg>
           </button>
         </div>
-        <button className="w-full flex items-center gap-2 bg-nearmee-surface rounded-xl px-3 py-3 text-sm text-nearmee-text-sec">
+        <button onClick={() => router.push('/search')} className="w-full flex items-center gap-2 bg-nearmee-surface rounded-xl px-3 py-3 text-sm text-nearmee-text-sec">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
@@ -157,7 +157,12 @@ export default function HomePage() {
 
       {/* ── Main content ───────────────────────────── */}
       <main className="flex-1 pb-28">
-        {selectedCategory === 'all' && (
+        {feedLoading && (
+          <div className="flex justify-center py-12">
+            <div className="w-7 h-7 border-2 border-nearmee-coral border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+        {!feedLoading && selectedCategory === 'all' && (
           <>
             {promotedServices.length > 0 && (
               <section className="px-4 mb-5">
@@ -180,7 +185,7 @@ export default function HomePage() {
           </>
         )}
 
-        <section className="px-4">
+        {!feedLoading && <section className="px-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-bold text-nearmee-text">
               {selectedCategory === 'all' ? 'All Services' : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
@@ -201,7 +206,7 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </section>
+        </section>}
       </main>
     </div>
   );
