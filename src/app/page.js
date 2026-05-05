@@ -17,11 +17,11 @@ function LandingPage() {
   return (
     <div className="relative flex flex-col min-h-screen bg-white overflow-hidden">
 
-      {/* Top-right pink blob */}
+      {/* Top-left pink blob */}
       <div className="absolute rounded-full"
         style={{
-          width: '320px', height: '320px',
-          top: '-100px', right: '-80px',
+          width: '300px', height: '300px',
+          top: '-80px', left: '-60px',
           background: '#FFB3B3', opacity: 0.55,
         }}
       />
