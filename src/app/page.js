@@ -69,6 +69,7 @@ function LandingPage() {
 
 // ── Home feed for authenticated users ───────────────────────────────────────
 export default function HomePage() {
+  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCity, setSelectedCity] = useState('bayawan');
