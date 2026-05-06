@@ -5,8 +5,81 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBookings } from '@/lib/hooks/useBookings';
 import { useToast } from '@/components/ui/Toast';
+import { createClient } from '@/lib/supabase/client';
 import { BOOKING_STATUSES, CATEGORIES } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
+
+function StarPicker({ value, onChange }) {
+  return (
+    <div className="flex gap-2 justify-center">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button key={star} onClick={() => onChange(star)} className="text-3xl transition-transform active:scale-110">
+          <span className={star <= value ? 'text-amber-400' : 'text-nearmee-border'}>★</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent!' };
+
+function ReviewModal({ booking, onClose, onSubmitted }) {
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const supabase = createClient();
+
+  async function handleSubmit() {
+    if (!rating) return;
+    setSubmitting(true);
+    const { error } = await supabase
+      .from('bookings')
+      .update({ customer_rating: rating, customer_review: review.trim() || null, rated_at: new Date().toISOString() })
+      .eq('id', booking.id);
+    setSubmitting(false);
+    if (!error) onSubmitted(booking.id, rating, review);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center px-4 pb-8">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl w-full max-w-app p-5 shadow-xl">
+        <h3 className="text-base font-extrabold text-nearmee-text text-center mb-1">Leave a Review</h3>
+        <p className="text-xs text-nearmee-text-sec text-center mb-5">
+          {booking?.service?.title} · {booking?.merchant?.business_name}
+        </p>
+
+        {/* Stars */}
+        <StarPicker value={rating} onChange={setRating} />
+        {rating > 0 && (
+          <p className="text-center text-xs font-bold text-amber-500 mt-1">{RATING_LABELS[rating]}</p>
+        )}
+
+        {/* Review text */}
+        <textarea
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          placeholder="Share your experience (optional)..."
+          rows={3}
+          className="w-full mt-4 border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral resize-none"
+        />
+
+        <div className="flex gap-3 mt-4">
+          <button onClick={onClose}
+            className="flex-1 py-3 rounded-xl border border-nearmee-border text-nearmee-text-sec text-sm font-semibold">
+            Cancel
+          </button>
+          <button onClick={handleSubmit} disabled={!rating || submitting}
+            className={`flex-1 py-3 rounded-xl text-white text-sm font-bold transition-opacity ${
+              !rating || submitting ? 'bg-nearmee-coral opacity-40' : 'bg-nearmee-coral active:opacity-90'
+            }`}>
+            {submitting ? 'Submitting…' : 'Submit Review'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const TABS = ['Upcoming', 'Completed', 'Cancelled'];
 
@@ -67,9 +140,17 @@ export default function BookingsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { bookings, loading: bookingsLoading, cancelBooking } = useBookings(user?.id);
-  const [cancelTarget, setCancelTarget] = useState(null);
   const { show: showToast } = useToast();
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [reviewTarget, setReviewTarget] = useState(null);
+  const [ratedBookings, setRatedBookings] = useState({});
   const [activeTab, setActiveTab] = useState('Upcoming');
+
+  function handleReviewSubmitted(bookingId, rating, review) {
+    setRatedBookings((prev) => ({ ...prev, [bookingId]: { rating, review } }));
+    setReviewTarget(null);
+    showToast('Review submitted! Thank you. ⭐');
+  }
 
   // Redirect to login if not authenticated
   if (!authLoading && !user) {
@@ -176,16 +257,45 @@ export default function BookingsPage() {
                     </div>
                   )}
                   {booking.status === 'completed' && (
-                    <div className="flex gap-2 mt-3">
-                      <button className="flex-1 py-2 rounded-lg border border-nearmee-border text-nearmee-text-sec text-xs font-semibold active:bg-nearmee-surface">
-                        Leave a Review
-                      </button>
-                      <button
-                        onClick={() => router.push(`/services/${booking.service?.id}`)}
-                        className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90"
-                      >
-                        Book Again
-                      </button>
+                    <div className="flex flex-col gap-2 mt-3">
+                      {/* Review reminder banner */}
+                      {!booking.customer_rating && !ratedBookings[booking.id] && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-center gap-2">
+                          <span className="text-base shrink-0">⭐</span>
+                          <p className="text-xs text-amber-700 font-medium flex-1">
+                            How was your experience? Your review helps other customers.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Rated badge */}
+                      {(booking.customer_rating || ratedBookings[booking.id]) && (
+                        <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2 flex items-center gap-2">
+                          <span className="text-base shrink-0">✅</span>
+                          <p className="text-xs text-green-700 font-medium">
+                            You rated this {ratedBookings[booking.id]?.rating ?? booking.customer_rating} ★ — thank you!
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        {!booking.customer_rating && !ratedBookings[booking.id] ? (
+                          <button
+                            onClick={() => setReviewTarget(booking)}
+                            className="flex-1 py-2 rounded-lg bg-amber-400 text-white text-xs font-bold active:opacity-90"
+                          >
+                            ⭐ Leave a Review
+                          </button>
+                        ) : (
+                          <div className="flex-1" />
+                        )}
+                        <button
+                          onClick={() => router.push(`/services/${booking.service?.id}`)}
+                          className="flex-1 py-2 rounded-lg bg-nearmee-coral text-white text-xs font-semibold active:opacity-90"
+                        >
+                          Book Again
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -205,6 +315,15 @@ export default function BookingsPage() {
             setCancelTarget(null);
             showToast(ok ? 'Booking cancelled' : 'Could not cancel', ok ? 'success' : 'error');
           }}
+        />
+      )}
+
+      {/* Review modal */}
+      {reviewTarget && (
+        <ReviewModal
+          booking={reviewTarget}
+          onClose={() => setReviewTarget(null)}
+          onSubmitted={handleReviewSubmitted}
         />
       )}
     </div>

@@ -41,12 +41,27 @@ export default function NotificationsPage() {
       // Customer bookings
       const { data: customerBookings } = await supabase
         .from('bookings')
-        .select('id, status, updated_at, booking_date, booking_time, service:services(title)')
+        .select('id, status, updated_at, booking_date, booking_time, customer_rating, service:services(id, title)')
         .eq('customer_id', user.id)
         .order('updated_at', { ascending: false })
         .limit(20);
 
       (customerBookings ?? []).forEach((b) => {
+        // Review reminder for completed unreviewed bookings
+        if (b.status === 'completed' && !b.customer_rating) {
+          items.push({
+            id: `review-${b.id}`,
+            icon: '⭐',
+            title: 'Leave a review',
+            body: b.service?.title ?? 'Completed service',
+            sub: 'Tap to rate your experience',
+            color: 'text-amber-600',
+            bg: 'bg-amber-50',
+            time: b.updated_at,
+            href: '/bookings',
+          });
+        }
+
         const cfg = STATUS_CONFIG[b.status] ?? STATUS_CONFIG.pending;
         items.push({
           id: `c-${b.id}`,
