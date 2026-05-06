@@ -148,6 +148,22 @@ export default function MerchantBookingsPage() {
                       </button>
                     </div>
                   )}
+                  {booking.status === 'confirmed' && booking.service?.category === 'errands' && (
+                    <div className="mb-2">
+                      <button
+                        onClick={async () => {
+                          await updateStatus(booking.id, 'in_progress');
+                          showToast('Errand started! Customer has been notified.', 'success');
+                        }}
+                        className="w-full py-3 rounded-xl bg-nearmee-coral text-white text-sm font-bold active:opacity-90 flex items-center justify-center gap-2"
+                      >
+                        🛵 Start Errand — I'm buying the items now
+                      </button>
+                      <p className="text-[11px] text-nearmee-text-sec text-center mt-1.5">
+                        Only tap after confirming details with customer via Messages
+                      </p>
+                    </div>
+                  )}
                   {booking.status === 'confirmed' && (
                     <div className="flex flex-col gap-2">
                       <div className="flex gap-2">

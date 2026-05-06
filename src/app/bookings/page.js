@@ -237,6 +237,22 @@ export default function BookingsPage() {
                     <span className="text-sm font-bold text-nearmee-text">{formatPrice(booking.total_price)}</span>
                   </div>
 
+                  {/* Errand in-progress alert */}
+                  {booking.status === 'in_progress' && booking.service?.category === 'errands' && (
+                    <div className="mt-3 bg-blue-50 border border-blue-300 rounded-xl p-3">
+                      <p className="text-xs font-bold text-blue-700 mb-1">🛵 Your errand runner is on the way!</p>
+                      <p className="text-xs text-blue-600 leading-relaxed">
+                        The merchant has started buying your items. Please be ready at your delivery address and have your payment ready (cash or GCash).
+                      </p>
+                      <button
+                        onClick={() => router.push(`/messages/${booking.id}`)}
+                        className="mt-2 w-full py-2 rounded-lg bg-blue-600 text-white text-xs font-bold active:opacity-90"
+                      >
+                        Message Merchant
+                      </button>
+                    </div>
+                  )}
+
                   {['pending', 'confirmed'].includes(booking.status) && (
                     <div className="flex gap-2 mt-3">
                       <button

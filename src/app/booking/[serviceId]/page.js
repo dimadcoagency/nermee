@@ -93,10 +93,15 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState('');
   const [notes, setNotes] = useState('');
   const [errandItems, setErrandItems] = useState([{ ...EMPTY_ITEM }]);
+  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [contactNumber, setContactNumber] = useState(user?.phone || '');
+  const [errandAgreed, setErrandAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const isErrands = service?.category === 'errands';
+  const canConfirm = selectedDate && selectedTime &&
+    (!isErrands || (deliveryAddress.trim() && errandAgreed));
 
   if (serviceLoading) {
     return (
@@ -114,8 +119,6 @@ export default function BookingPage() {
     );
   }
 
-  const canConfirm = selectedDate && selectedTime;
-
   // Get time slots for the selected date
   const selectedDayOfWeek = new Date(selectedDate + 'T00:00:00').getDay();
   const timeSlots = (service.availability ?? [])
@@ -127,16 +130,22 @@ export default function BookingPage() {
     setLoading(true);
     setError('');
 
-    // Format errand items into notes if applicable
+    // Format errand details into notes
     let finalNotes = notes;
     if (isErrands) {
       const filled = errandItems.filter((it) => it.item.trim());
-      if (filled.length > 0) {
-        const itemLines = filled.map((it, i) =>
-          `${i + 1}. ${it.item} (x${it.qty || 1})${it.store ? ' — ' + it.store : ''}${it.budget ? ' — ₱' + it.budget + ' max' : ''}`
-        ).join('\n');
-        finalNotes = `ERRAND ITEMS:\n${itemLines}${notes ? '\n\nNotes: ' + notes : ''}`;
-      }
+      const itemLines = filled.length > 0
+        ? filled.map((it, i) =>
+            `${i + 1}. ${it.item} (x${it.qty || 1})${it.store ? ' — ' + it.store : ''}${it.budget ? ' — ₱' + it.budget + ' max' : ''}`
+          ).join('\n')
+        : 'No items listed';
+
+      finalNotes = `📦 ERRAND ORDER\n` +
+        `📍 Deliver to: ${deliveryAddress}\n` +
+        `📞 Contact: ${contactNumber}\n\n` +
+        `ITEMS:\n${itemLines}` +
+        (notes ? `\n\nAdditional notes: ${notes}` : '') +
+        `\n\n✅ Customer agreed to errand terms`;
     }
 
     const { data, error: bookingError } = await createBooking({
@@ -209,9 +218,87 @@ export default function BookingPage() {
           <TimePicker slots={timeSlots} selected={selectedTime} onSelect={setSelectedTime} />
         </section>
 
-        {/* Errands order form — only for errands category */}
+        {/* Errands order form + delivery details */}
         {isErrands && (
-          <ErrandsOrderForm items={errandItems} onChange={setErrandItems} />
+          <>
+            <ErrandsOrderForm items={errandItems} onChange={setErrandItems} />
+
+            {/* Delivery address */}
+            <section className="px-4 py-4 border-b border-nearmee-border flex flex-col gap-4">
+              <p className="text-xs font-bold text-nearmee-text-sec uppercase tracking-widest">Delivery Details</p>
+
+              <div>
+                <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">
+                  Delivery Address <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  placeholder="e.g. Purok 3, Brgy. Ubos, Bayawan City — near the blue gate"
+                  rows={2}
+                  className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral resize-none"
+                />
+                <p className="text-xs text-nearmee-text-sec mt-1">Be specific — purok, landmark, house description.</p>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">
+                  Contact Number <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={contactNumber}
+                  onChange={(e) => setContactNumber(e.target.value)}
+                  placeholder="09XXXXXXXXX"
+                  className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral"
+                />
+                <p className="text-xs text-nearmee-text-sec mt-1">The merchant will call this number before and during delivery.</p>
+              </div>
+            </section>
+
+            {/* Customer agreement */}
+            <section className="px-4 py-4 border-b border-nearmee-border">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
+                <p className="text-xs font-bold text-amber-700 mb-2">⚠️ Errand Agreement</p>
+                <p className="text-xs text-amber-700 leading-relaxed">
+                  The merchant will use their own money to purchase your items. You agree to:
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {[
+                    'Pay the full amount (items + service fee) upon delivery',
+                    'Be reachable on your contact number throughout the errand',
+                    'Accept delivery at the address provided above',
+                    'Not cancel after the merchant has started buying items',
+                  ].map((item) => (
+                    <li key={item} className="text-xs text-amber-700 flex gap-1.5">
+                      <span className="shrink-0">•</span>{item}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs font-semibold text-red-600 mt-2">
+                  Failure to pay or be contactable is a violation of Nearmee's Terms and may result in account suspension.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setErrandAgreed(!errandAgreed)}
+                className="flex items-start gap-3 w-full text-left"
+              >
+                <div className={`w-5 h-5 rounded border-2 shrink-0 mt-0.5 flex items-center justify-center transition-colors ${
+                  errandAgreed ? 'bg-nearmee-coral border-nearmee-coral' : 'border-nearmee-border'
+                }`}>
+                  {errandAgreed && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+                <p className="text-sm font-semibold text-nearmee-text leading-snug">
+                  I understand and agree to the errand terms above
+                </p>
+              </button>
+            </section>
+          </>
         )}
 
         {/* Notes */}
@@ -279,7 +366,10 @@ export default function BookingPage() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-app bg-white border-t border-nearmee-border px-4 py-3 z-10">
         {!canConfirm && (
           <p className="text-xs text-center text-nearmee-text-sec mb-2">
-            {!selectedDate ? 'Select a date' : 'Select a time slot'}
+            {!selectedDate ? 'Select a date' :
+             !selectedTime ? 'Select a time slot' :
+             isErrands && !deliveryAddress.trim() ? 'Enter your delivery address' :
+             isErrands && !errandAgreed ? 'Agree to errand terms to continue' : ''}
           </p>
         )}
         <button
