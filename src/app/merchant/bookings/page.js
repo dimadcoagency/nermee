@@ -174,6 +174,18 @@ export default function MerchantBookingsPage() {
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FF5757" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                           Message
                         </button>
+                        {/* Call button — only for errands */}
+                        {booking.service?.category === 'errands' && booking.customer?.phone && (
+                          <a
+                            href={`tel:${booking.customer.phone}`}
+                            className="flex-1 py-2.5 rounded-xl border border-green-300 text-green-700 text-xs font-bold active:bg-green-50 flex items-center justify-center gap-1"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            Call
+                          </a>
+                        )}
                         <button
                           onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Marked as completed!'); }}
                           className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
@@ -192,6 +204,35 @@ export default function MerchantBookingsPage() {
                           😔 Customer No-Show
                         </button>
                       )}
+                    </div>
+                  )}
+
+                  {/* In-progress errands: Call + Mark Complete */}
+                  {booking.status === 'in_progress' && booking.service?.category === 'errands' && (
+                    <div className="flex gap-2 mt-2">
+                      {booking.customer?.phone && (
+                        <a
+                          href={`tel:${booking.customer.phone}`}
+                          className="flex-1 py-2.5 rounded-xl border border-green-300 text-green-700 text-xs font-bold active:bg-green-50 flex items-center justify-center gap-1"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                          </svg>
+                          Call Customer
+                        </a>
+                      )}
+                      <button
+                        onClick={() => router.push(`/messages/${booking.id}`)}
+                        className="flex-1 py-2.5 rounded-xl border border-nearmee-coral text-nearmee-coral text-xs font-bold active:bg-nearmee-light flex items-center justify-center gap-1"
+                      >
+                        Message
+                      </button>
+                      <button
+                        onClick={async () => { await updateStatus(booking.id, 'completed'); showToast('Errand completed!'); }}
+                        className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold active:opacity-90"
+                      >
+                        Delivered ✓
+                      </button>
                     </div>
                   )}
                 </div>

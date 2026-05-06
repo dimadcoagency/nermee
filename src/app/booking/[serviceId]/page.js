@@ -94,7 +94,6 @@ export default function BookingPage() {
   const [notes, setNotes] = useState('');
   const [errandItems, setErrandItems] = useState([{ ...EMPTY_ITEM }]);
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [contactNumber, setContactNumber] = useState(user?.phone || '');
   const [errandAgreed, setErrandAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -141,8 +140,7 @@ export default function BookingPage() {
         : 'No items listed';
 
       finalNotes = `📦 ERRAND ORDER\n` +
-        `📍 Deliver to: ${deliveryAddress}\n` +
-        `📞 Contact: ${contactNumber}\n\n` +
+        `📍 Deliver to: ${deliveryAddress}\n\n` +
         `ITEMS:\n${itemLines}` +
         (notes ? `\n\nAdditional notes: ${notes}` : '') +
         `\n\n✅ Customer agreed to errand terms`;
@@ -241,18 +239,11 @@ export default function BookingPage() {
                 <p className="text-xs text-nearmee-text-sec mt-1">Be specific — purok, landmark, house description.</p>
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-nearmee-text-sec mb-1.5 block">
-                  Contact Number <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="tel"
-                  value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
-                  placeholder="09XXXXXXXXX"
-                  className="w-full border border-nearmee-border rounded-xl px-4 py-3 text-sm text-nearmee-text outline-none focus:ring-2 focus:ring-nearmee-coral"
-                />
-                <p className="text-xs text-nearmee-text-sec mt-1">The merchant will call this number before and during delivery.</p>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                <p className="text-xs font-semibold text-blue-700 mb-1">📱 Contact via Nearmee</p>
+                <p className="text-xs text-blue-600 leading-relaxed">
+                  The merchant will contact you through Nearmee Messages or call you directly using your registered number. Make sure your phone is on during delivery.
+                </p>
               </div>
             </section>
 
